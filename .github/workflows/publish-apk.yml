@@ -1,0 +1,31 @@
+name: Publish existing APK build
+
+# Publishes an EAS build that was queued earlier, e.g. from a local `eas build`
+# or after an interrupted run. Waits for it to finish if it is still running.
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: EAS build ID
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Wait and publish release
+        working-directory: frontend
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ../.github/scripts/publish-apk.sh "${{ inputs.build_id }}"
