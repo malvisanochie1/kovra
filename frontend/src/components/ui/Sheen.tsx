@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useIsFocused } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -22,13 +23,15 @@ interface SheenProps {
 export function Sheen({ interval = 3200, intensity = 0.35 }: SheenProps) {
   const progress = useSharedValue(0);
   const width = useSharedValue(0);
+  const focused = useIsFocused();
 
   useEffect(() => {
+    if (!focused) return;
     progress.set(
       withRepeat(withSequence(withDelay(interval, withTiming(1, { duration: 1100, easing: ease })), withTiming(0, { duration: 0 })), -1),
     );
     return () => cancelAnimation(progress);
-  }, [interval, progress]);
+  }, [focused, interval, progress]);
 
   const style = useAnimatedStyle(() => ({
     width: width.value * 0.45,

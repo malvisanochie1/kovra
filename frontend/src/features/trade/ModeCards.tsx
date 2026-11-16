@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { DeviceArt } from '@/features/catalog/DeviceArt';
 import { useLoop } from '@/hooks/useLoop';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 function RisingNote({ lift, offset, left }: { lift: SharedValue<number>; offset: number; left: number }) {
   const style = useAnimatedStyle(() => {
@@ -84,7 +84,7 @@ export function ModeCards() {
   return (
     <View className="gap-3 md:flex-row">
       {modes.map(({ kind, title, body, Art, accent }, index) => (
-        <Animated.View key={kind} entering={rise(index + 1)} className="md:flex-1">
+        <Reveal index={index + 1} key={kind} className="md:flex-1">
           <PressableScale
             onPress={() => router.push({ pathname: '/trade/[kind]', params: { kind } })}
             accessibilityLabel={title}
@@ -103,7 +103,7 @@ export function ModeCards() {
             </View>
             <Art />
           </PressableScale>
-        </Animated.View>
+        </Reveal>
       ))}
     </View>
   );

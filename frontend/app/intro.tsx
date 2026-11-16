@@ -4,8 +4,6 @@ import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, {
   Easing,
-  FadeIn,
-  FadeInDown,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
@@ -16,8 +14,10 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Aurora } from '@/components/brand/Aurora';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { useLoop } from '@/hooks/useLoop';
+import { revealApp } from '@/lib/splash';
 import { useSession } from '@/store/session';
 import { spring } from '@/theme/motion';
 
@@ -111,47 +111,39 @@ export default function Intro() {
   };
 
   return (
-    <View className="flex-1 bg-ink">
+    <View className="flex-1 bg-ink" onLayout={revealApp}>
       <Aurora variant="hero" />
       <View className="flex-1 items-center justify-center px-8">
         <IgnitionMark />
 
         <View className="mt-2 flex-row gap-2">
           {WORD.map((char, index) => (
-            <Animated.Text
-              key={index}
-              entering={FadeInDown.delay(1350 + index * 70).duration(500)}
-              className="font-sora-bold text-[34px] tracking-[6px] text-snow"
-            >
-              {char}
-            </Animated.Text>
+            <Reveal key={index} delay={1350 + index * 70}>
+              <Text className="font-sora-bold text-[34px] tracking-[6px] text-snow">{char}</Text>
+            </Reveal>
           ))}
         </View>
-        <Animated.Text entering={FadeIn.delay(1900).duration(700)} className="mt-3 text-center font-sora text-[15px] text-mist">
-          {business.tagline}
-        </Animated.Text>
+        <Reveal delay={1900}>
+          <Text className="mt-3 text-center font-sora text-[15px] text-mist">{business.tagline}</Text>
+        </Reveal>
 
         <View className="mt-8 flex-row flex-wrap justify-center gap-2">
           {pillars.map((label, index) => (
-            <Animated.View
-              key={label}
-              entering={FadeInDown.delay(2150 + index * 90).duration(450)}
-              className="rounded-lg border border-edge bg-ink-2/80 px-3 py-1.5"
-            >
+            <Reveal delay={2150 + index * 90} key={label} className="rounded-lg border border-edge bg-ink-2/80 px-3 py-1.5">
               <Text className="font-sora-medium text-xs text-snow">{label}</Text>
-            </Animated.View>
+            </Reveal>
           ))}
         </View>
       </View>
 
-      <Animated.View
-        entering={FadeInDown.delay(2700).duration(600)}
+      <Reveal
+        delay={2700}
         style={{ paddingBottom: Math.max(insets.bottom, 16) + 16 }}
         className="w-full max-w-[460px] gap-4 self-center px-6"
       >
         <Button label="Enter the store" trailingIcon="arrow" shine onPress={enter} />
         <Text className="text-center font-sora text-xs text-dim">{business.promise.join('  ·  ')}</Text>
-      </Animated.View>
+      </Reveal>
     </View>
   );
 }

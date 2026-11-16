@@ -2,15 +2,15 @@ import { findProduct, findTradeModel, unitPrice, type TradeDevice, type TradeKin
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { Container } from '@/components/ui/primitives';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Container } from '@/components/ui/primitives';
+import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { StepProgress } from '@/features/trade/StepProgress';
 import { ConditionStep, DeviceStep, OfferStep, StepTitle, TargetStep } from '@/features/trade/steps';
-import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ApiError } from '@/lib/api';
 import { chatOnWhatsApp, tradeMessage } from '@/lib/contact';
 import { isValidPhone, normalisePhone, type Errors } from '@/lib/validation';
@@ -19,12 +19,8 @@ import { useCatalog } from '@/store/catalog';
 import { useHistory } from '@/store/history';
 import { useSession } from '@/store/session';
 import { colors } from '@/theme/colors';
-import { ease } from '@/theme/motion';
 
 type Step = 'device' | 'condition' | 'target' | 'offer';
-
-const enter = FadeInRight.duration(380).easing(ease);
-const leave = FadeOutLeft.duration(200);
 
 export default function TradeWizard() {
   useTrayPlacement('hidden');
@@ -97,9 +93,9 @@ export default function TradeWizard() {
     return (
       <View style={{ paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 }} className="flex-1 bg-ink px-6">
         <View className="w-full max-w-[460px] flex-1 justify-center gap-6 self-center">
-          <Animated.View entering={enter} className="h-20 w-20 items-center justify-center rounded-[24px] bg-gold/15">
+          <Reveal className="h-20 w-20 items-center justify-center rounded-[24px] bg-gold/15">
             <Icon name="check" size={40} color={colors.gold} strokeWidth={2.2} />
-          </Animated.View>
+          </Reveal>
           <StepTitle
             title="Request received"
             body={`Reference ${done.reference}. We’ll confirm your offer on ${contact.phone} shortly. You can also message us now to arrange a quick check.`}
@@ -120,7 +116,7 @@ export default function TradeWizard() {
 
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 32 }}>
         <Container narrow>
-          <Animated.View key={current} entering={enter} exiting={leave}>
+          <Reveal key={current} from="right" distance={32}>
             {current === 'device' && (
               <DeviceStep
                 modelId={device.modelId || null}
@@ -144,7 +140,7 @@ export default function TradeWizard() {
                 }}
               />
             )}
-          </Animated.View>
+          </Reveal>
         </Container>
       </ScrollView>
 

@@ -1,22 +1,21 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Aurora } from '@/components/brand/Aurora';
 import { LogoMark } from '@/components/brand/Logo';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { OptionCard } from '@/components/ui/OptionCard';
 import { Segmented } from '@/components/ui/Segmented';
-import { linkFingerprint, signInWithFingerprint } from '@/features/account/fingerprint';
 import { FingerprintMark, type ScanState } from '@/features/account/FingerprintMark';
+import { linkFingerprint, signInWithFingerprint } from '@/features/account/fingerprint';
 import { useBiometricSupport } from '@/features/account/useBiometricSupport';
 import { ApiError } from '@/lib/api';
 import { isValidEmail, isValidPhone, normalisePhone, type Errors } from '@/lib/validation';
 import { auth, type Session } from '@/services/auth';
 import { useSession } from '@/store/session';
-import { rise } from '@/theme/entering';
 
 type Mode = 'join' | 'signin';
 type FieldName = 'name' | 'username' | 'email' | 'phone' | 'identifier' | 'password' | 'form';
@@ -118,9 +117,9 @@ export default function Auth() {
         className="flex-1 items-center justify-center gap-8 bg-ink px-8"
       >
         <Aurora variant="page" />
-        <Animated.View entering={FadeIn.duration(300)}>
+        <Reveal>
           <FingerprintMark state={scan.state} size={150} />
-        </Animated.View>
+        </Reveal>
         <Text className="max-w-[340px] text-center font-sora-medium text-base leading-6 text-snow">{scan.message}</Text>
         {scan.state === 'error' && (
           <View className="w-full max-w-[340px] gap-3">
@@ -141,15 +140,15 @@ export default function Auth() {
         contentContainerClassName="grow justify-center px-6"
       >
         <View className="w-full max-w-[440px] gap-7 self-center">
-          <Animated.View entering={rise(0)} className="gap-4">
+          <Reveal index={0} className="gap-4">
             <LogoMark size={56} />
             <Text className="font-sora-bold text-[32px] leading-10 text-snow">{joining ? 'Join Kovra' : 'Welcome back'}</Text>
             <Text className="font-sora text-[15px] leading-6 text-mist">
               {joining ? 'Track orders, keep a Vault and check out in seconds.' : 'Sign in with your username or email.'}
             </Text>
-          </Animated.View>
+          </Reveal>
 
-          <Animated.View entering={rise(1)}>
+          <Reveal index={1}>
             <Segmented
               options={[
                 { value: 'join', label: 'Create account' },
@@ -161,10 +160,10 @@ export default function Auth() {
                 setErrors({});
               }}
             />
-          </Animated.View>
+          </Reveal>
 
           {joining ? (
-            <Animated.View key="join" entering={FadeInDown.duration(320)} exiting={FadeOutUp.duration(160)} className="gap-5">
+            <Reveal key="join" className="gap-5">
               <Field
                 label="Full name"
                 icon="user"
@@ -224,9 +223,9 @@ export default function Auth() {
                   onPress={() => setWantsFingerprint((v) => !v)}
                 />
               )}
-            </Animated.View>
+            </Reveal>
           ) : (
-            <Animated.View key="signin" entering={FadeInDown.duration(320)} exiting={FadeOutUp.duration(160)} className="gap-5">
+            <Reveal key="signin" className="gap-5">
               <Field
                 label="Username or email"
                 icon="user"
@@ -248,13 +247,13 @@ export default function Auth() {
                 error={errors.password}
                 autoComplete="current-password"
               />
-            </Animated.View>
+            </Reveal>
           )}
 
           {errors.form && (
-            <Animated.Text entering={FadeInDown.duration(220)} className="font-sora text-sm text-danger">
-              {errors.form}
-            </Animated.Text>
+            <Reveal>
+              <Text className="font-sora text-sm text-danger">{errors.form}</Text>
+            </Reveal>
           )}
 
           <View className="gap-3">

@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, Text, TextInput, View, type TextInputInstance } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { Chip, Container, EmptyState } from '@/components/ui/primitives';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { ScrollShell } from '@/components/ui/ScrollShell';
+import { Chip, Container, EmptyState } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ProductGrid } from '@/features/catalog/ProductCollections';
 import { useLayout } from '@/lib/layout';
@@ -88,18 +88,14 @@ function ExploreView({ params }: { params: ExploreParams }) {
   };
 
   return (
-    <ScrollShell title="Explore">
+    <ScrollShell
+      title="Explore"
+      heading={{
+        title: 'Explore',
+        subtitle: `${results.length} ${results.length === 1 ? 'device' : 'devices'}${brand ? ` from ${brand}` : ''}`,
+      }}
+    >
       <Container className="gap-5">
-        <View className="gap-1">
-          <Text className="font-sora-bold text-[30px] text-snow" accessibilityRole="header">
-            Explore
-          </Text>
-          <Text className="font-sora text-sm text-mist">
-            {results.length} {results.length === 1 ? 'device' : 'devices'}
-            {brand ? ` from ${brand}` : ''}
-          </Text>
-        </View>
-
         <View className="h-14 flex-row items-center gap-3 rounded-2xl border border-edge bg-ink-2 px-4">
           <Icon name="search" size={20} color={colors.dim} />
           <TextInput

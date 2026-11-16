@@ -2,7 +2,8 @@ import { conditionLabels, discountPercent, formatNaira, type Product } from '@ko
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { memo, useRef } from 'react';
-import { StyleSheet, Text, View, type HostInstance } from 'react-native';
+import { StyleSheet, Text, View, type HostInstance, type StyleProp, type ViewStyle } from 'react-native';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { withAlpha } from '@/lib/color';
@@ -29,10 +30,12 @@ export const specLine = (product: Product) =>
 interface ProductCardProps {
   product: Product;
   width: number;
+  /** Optional scroll-linked motion for the device inside the card (used by rails). */
+  visualStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
 }
 
 /** A "spec card": the device on a lit stage, its key specs, colourways and price. */
-function ProductCardBase({ product, width }: ProductCardProps) {
+function ProductCardBase({ product, width, visualStyle }: ProductCardProps) {
   const stageRef = useRef<HostInstance>(null);
   const addToBag = useAddToBag();
   const discount = discountPercent(product);
@@ -54,9 +57,11 @@ function ProductCardBase({ product, width }: ProductCardProps) {
             style={StyleSheet.absoluteFill}
           />
           <View style={[styles.floor, { width: width * 0.6, bottom: width * 0.1 }]} />
-          <View ref={stageRef} collapsable={false}>
-            <ProductVisual product={product} height={width * 0.8} />
-          </View>
+          <Animated.View style={visualStyle}>
+            <View ref={stageRef} collapsable={false}>
+              <ProductVisual product={product} height={width * 0.8} />
+            </View>
+          </Animated.View>
           <View className="absolute bottom-3 left-3 flex-row gap-1">
             {product.colors.slice(0, 4).map((c) => (
               <View key={c.name} style={{ backgroundColor: c.hex }} className="h-2.5 w-2.5 rounded-full border border-white/30" />

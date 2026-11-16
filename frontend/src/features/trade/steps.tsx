@@ -14,16 +14,15 @@ import {
 } from '@kovra/shared';
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { Field } from '@/components/ui/Field';
-import { Chip } from '@/components/ui/primitives';
+import { OptionCard } from '@/components/ui/OptionCard';
 import { Segmented } from '@/components/ui/Segmented';
+import { Chip } from '@/components/ui/primitives';
 import { ProductVisual } from '@/features/catalog/ProductVisual';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useLayout } from '@/lib/layout';
 import type { Errors } from '@/lib/validation';
-import { rise } from '@/theme/entering';
-import { OptionCard } from '@/components/ui/OptionCard';
 
 const brands = [...new Set(tradeModels.map((m) => m.brand))];
 
@@ -59,14 +58,14 @@ export function DeviceStep({ modelId, onSelect }: { modelId: string | null; onSe
         {tradeModels
           .filter((m) => m.brand === brand)
           .map((model, index) => (
-            <Animated.View key={model.id} entering={rise(index)}>
+            <Reveal index={index} key={model.id}>
               <OptionCard
                 title={model.name}
                 detail={`Up to ${formatNaira(model.baseValue + (model.storage.at(-1)?.priceDelta ?? 0))}`}
                 selected={model.id === modelId}
                 onPress={() => onSelect(model)}
               />
-            </Animated.View>
+            </Reveal>
           ))}
       </View>
     </View>
@@ -134,7 +133,7 @@ export function TargetStep({ phones, targetId, onSelect }: { phones: Product[]; 
       <StepTitle title="What are you swapping into?" body="Choose your next phone. We’ll take yours off the price." />
       <View className="gap-2.5">
         {phones.map((product, index) => (
-          <Animated.View key={product.id} entering={rise(index)}>
+          <Reveal index={index} key={product.id}>
             <OptionCard
               title={product.name}
               detail={`${product.condition === 'new' ? 'Brand new' : 'UK-used'} · ${formatNaira(unitPrice(product))}`}
@@ -146,7 +145,7 @@ export function TargetStep({ phones, targetId, onSelect }: { phones: Product[]; 
                 </View>
               }
             />
-          </Animated.View>
+          </Reveal>
         ))}
       </View>
     </View>

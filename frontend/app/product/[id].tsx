@@ -3,25 +3,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, type HostInstance } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Aurora } from '@/components/brand/Aurora';
+import { Reveal } from '@/components/motion/Reveal';
+import { ScrollReveal } from '@/components/motion/ScrollReveal';
 import { Button } from '@/components/ui/Button';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
-import { Badge, Chip, Container, EmptyState, Rating, SectionHeader } from '@/components/ui/primitives';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Badge, Chip, Container, EmptyState, Rating, SectionHeader } from '@/components/ui/primitives';
 import { PURCHASE_BAR_HEIGHT } from '@/features/bag/geometry';
 import { useAddToBag } from '@/features/bag/useAddToBag';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { FlipViewer } from '@/features/catalog/FlipViewer';
 import { VaultButton } from '@/features/vault/VaultButton';
+import { useAfterFirstPaint } from '@/hooks/useAfterFirstPaint';
 import { useCountUp } from '@/hooks/useCountUp';
 import { withAlpha } from '@/lib/color';
 import { useLayout } from '@/lib/layout';
 import { useProduct } from '@/store/catalog';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 const promises: { icon: IconName; title: string; body: string }[] = [
   { icon: 'shield', title: 'Tested before it ships', body: 'Every device is checked by our technicians.' },
@@ -42,6 +43,8 @@ export default function ProductScreen() {
   const [storage, setStorage] = useState(product?.storage?.[0]?.label);
   const price = product ? unitPrice(product, storage) : 0;
   const shownPrice = useCountUp(price, 500);
+  // The spec sheet and promises render just after the page appears, so it opens instantly.
+  const ready = useAfterFirstPaint();
 
   if (!product) {
     return (
@@ -69,12 +72,14 @@ export default function ProductScreen() {
         <ScreenHeader title="" right={<VaultButton productId={product.id} size={44} />} fallbackHref="/" />
 
         <Container className="gap-8 md:flex-row md:items-start md:gap-12">
-          <Animated.View entering={rise(0)} ref={stageRef} collapsable={false} className="md:flex-1">
-            <FlipViewer product={product} color={color.hex} height={stageHeight} />
-          </Animated.View>
+          <Reveal index={0} className="md:flex-1">
+            <View ref={stageRef} collapsable={false}>
+              <FlipViewer product={product} color={color.hex} height={stageHeight} />
+            </View>
+          </Reveal>
 
           <View className="gap-7 md:flex-1">
-            <Animated.View entering={rise(1)} className="gap-3">
+            <Reveal index={1} className="gap-3">
               <View className="flex-row flex-wrap items-center gap-2">
                 <Text className="font-sora-medium text-xs uppercase tracking-[2px] text-dim">{product.brand}</Text>
                 <Badge label={conditionLabels[product.condition]} tone={product.condition === 'new' ? 'gold' : 'azure'} />
@@ -91,9 +96,9 @@ export default function ProductScreen() {
                 )}
                 <Rating value={product.rating} count={product.reviewCount} />
               </View>
-            </Animated.View>
+            </Reveal>
 
-            <Animated.View entering={rise(2)} className="gap-3">
+            <Reveal index={2} className="gap-3">
               <Text className="font-sora-medium text-xs text-mist">
                 Colour · <Text className="text-snow">{color.name}</Text>
               </Text>
@@ -114,10 +119,10 @@ export default function ProductScreen() {
                   );
                 })}
               </View>
-            </Animated.View>
+            </Reveal>
 
             {product.storage && product.storage.length > 1 && (
-              <Animated.View entering={rise(3)} className="gap-3">
+              <Reveal index={3} className="gap-3">
                 <Text className="font-sora-medium text-xs text-mist">Storage</Text>
                 <View className="flex-row flex-wrap gap-2">
                   {product.storage.map((s) => (
@@ -129,11 +134,11 @@ export default function ProductScreen() {
                     />
                   ))}
                 </View>
-              </Animated.View>
+              </Reveal>
             )}
 
             {product.category === 'phones' && (
-              <Animated.View entering={rise(4)}>
+              <Reveal index={4}>
                 <PressableScale
                   onPress={() => router.push({ pathname: '/trade/[kind]', params: { kind: 'swap', target: product.id } })}
                   className="flex-row items-center gap-4 rounded-2xl border border-gold/30 bg-gold/5 p-4"
@@ -147,36 +152,40 @@ export default function ProductScreen() {
                   </View>
                   <Icon name="forward" size={18} color={colors.gold} />
                 </PressableScale>
-              </Animated.View>
+              </Reveal>
             )}
 
-            <View>
-              <SectionHeader title="Spec sheet" />
-              <View className="flex-row flex-wrap gap-2.5">
-                {product.specs.map((spec) => (
-                  <View key={spec.label} className="min-w-[46%] flex-1 gap-1 rounded-2xl border border-edge bg-ink-2 p-4">
-                    <Text className="font-sora text-[11px] uppercase tracking-[1.2px] text-dim">{spec.label}</Text>
-                    <Text className="font-sora-medium text-sm text-snow">{spec.value}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-
-            <Text className="font-sora text-[15px] leading-7 text-mist">{product.description}</Text>
-
-            <View className="gap-3">
-              {promises.map((p) => (
-                <View key={p.title} className="flex-row items-center gap-4">
-                  <View className="h-10 w-10 items-center justify-center rounded-xl border border-edge bg-ink-2">
-                    <Icon name={p.icon} size={18} color={colors.gold} />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-sora-semibold text-sm text-snow">{p.title}</Text>
-                    <Text className="font-sora text-xs text-mist">{p.body}</Text>
+            {ready && (
+              <ScrollReveal className="gap-7">
+                <View>
+                  <SectionHeader title="Spec sheet" />
+                  <View className="flex-row flex-wrap gap-2.5">
+                    {product.specs.map((spec) => (
+                      <View key={spec.label} className="min-w-[46%] flex-1 gap-1 rounded-2xl border border-edge bg-ink-2 p-4">
+                        <Text className="font-sora text-[11px] uppercase tracking-[1.2px] text-dim">{spec.label}</Text>
+                        <Text className="font-sora-medium text-sm text-snow">{spec.value}</Text>
+                      </View>
+                    ))}
                   </View>
                 </View>
-              ))}
-            </View>
+
+                <Text className="font-sora text-[15px] leading-7 text-mist">{product.description}</Text>
+
+                <View className="gap-3">
+                  {promises.map((p) => (
+                    <View key={p.title} className="flex-row items-center gap-4">
+                      <View className="h-10 w-10 items-center justify-center rounded-xl border border-edge bg-ink-2">
+                        <Icon name={p.icon} size={18} color={colors.gold} />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="font-sora-semibold text-sm text-snow">{p.title}</Text>
+                        <Text className="font-sora text-xs text-mist">{p.body}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </ScrollReveal>
+            )}
           </View>
         </Container>
       </ScrollView>

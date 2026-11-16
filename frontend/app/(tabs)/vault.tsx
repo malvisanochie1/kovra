@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
-import { Container, EmptyState, SectionHeader } from '@/components/ui/primitives';
 import { ScrollShell } from '@/components/ui/ScrollShell';
 import { Segmented } from '@/components/ui/Segmented';
+import { Container, EmptyState, SectionHeader } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ProductGrid } from '@/features/catalog/ProductCollections';
 import { CompareTable } from '@/features/vault/CompareTable';
@@ -22,19 +22,14 @@ export default function Vault() {
   const comparable = products.slice(0, 3);
 
   return (
-    <ScrollShell title="Vault">
+    <ScrollShell
+      title="Vault"
+      heading={{
+        title: 'Vault',
+        subtitle: products.length ? `${products.length} saved · tap a bookmark to add or remove` : 'Devices you save, kept in one place',
+      }}
+    >
       <Container className="gap-6">
-        <View className="gap-1">
-          <Text className="font-sora-bold text-[30px] text-snow" accessibilityRole="header">
-            Vault
-          </Text>
-          <Text className="font-sora text-sm text-mist">
-            {products.length
-              ? `${products.length} saved · tap the bookmark on any device to add or remove it`
-              : 'Devices you save, kept in one place'}
-          </Text>
-        </View>
-
         {products.length === 0 ? (
           <EmptyState
             icon="bookmark"

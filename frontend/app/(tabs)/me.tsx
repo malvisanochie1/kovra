@@ -2,19 +2,19 @@ import { business, formatNaira, orderStatusLabels } from '@kovra/shared';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
+import { ScrollReveal } from '@/components/motion/ScrollReveal';
 import { Button } from '@/components/ui/Button';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
-import { Container, SectionHeader } from '@/components/ui/primitives';
 import { ScrollShell } from '@/components/ui/ScrollShell';
+import { Container, SectionHeader } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { callStore, chatOnWhatsApp } from '@/lib/contact';
 import { useHistory } from '@/store/history';
 import { useSession } from '@/store/session';
 import { useVault } from '@/store/vault';
 import { colors, gradients } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 function Row({ icon, title, detail, onPress }: { icon: IconName; title: string; detail?: string; onPress: () => void }) {
   return (
@@ -56,7 +56,7 @@ export default function Me() {
   return (
     <ScrollShell title="Me">
       <Container narrow className="gap-7">
-        <Animated.View entering={rise(0)} className="overflow-hidden rounded-[28px] border border-edge bg-ink-2">
+        <Reveal index={0} className="overflow-hidden rounded-[28px] border border-edge bg-ink-2">
           <View className="flex-row items-center gap-4 p-5">
             <View className="h-16 w-16 items-center justify-center overflow-hidden rounded-[20px]">
               <LinearGradient colors={gradients.gold} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
@@ -85,16 +85,16 @@ export default function Me() {
               <Button label="Sign in or create account" size="md" onPress={() => router.push('/auth')} />
             </View>
           )}
-        </Animated.View>
+        </Reveal>
 
-        <View>
+        <ScrollReveal>
           <SectionHeader title="Orders" />
           {orders.length === 0 ? (
             <Text className="font-sora text-sm text-mist">No orders yet. They’ll appear here with live tracking.</Text>
           ) : (
             <View className="gap-2.5">
               {orders.slice(0, 6).map((order, index) => (
-                <Animated.View key={order.id} entering={rise(index)}>
+                <Reveal index={index} key={order.id}>
                   <PressableScale
                     onPress={() => router.push({ pathname: '/order/[id]', params: { id: order.id } })}
                     pressedScale={0.98}
@@ -110,11 +110,11 @@ export default function Me() {
                     <Text className="font-sora-semibold text-sm text-gold">{formatNaira(order.total)}</Text>
                     <Icon name="forward" size={16} color={colors.dim} />
                   </PressableScale>
-                </Animated.View>
+                </Reveal>
               ))}
             </View>
           )}
-        </View>
+        </ScrollReveal>
 
         {profile && (
           <View>
@@ -130,7 +130,7 @@ export default function Me() {
           </View>
         )}
 
-        <View>
+        <ScrollReveal>
           <SectionHeader title="Store" />
           <View className="overflow-hidden rounded-[22px] border border-edge bg-ink-2">
             <Row icon="chat" title="Chat on WhatsApp" detail="Fastest way to reach us" onPress={() => chatOnWhatsApp()} />
@@ -139,9 +139,9 @@ export default function Me() {
             <View className="ml-[72px] h-px bg-edge" />
             <Row icon="swap" title="Sell or swap a phone" detail="Instant trade-in estimate" onPress={() => router.push('/trade')} />
           </View>
-        </View>
+        </ScrollReveal>
 
-        <View className="gap-3 rounded-[22px] border border-edge bg-ink-2 p-5">
+        <ScrollReveal className="gap-3 rounded-[22px] border border-edge bg-ink-2 p-5">
           {[
             ['shield', `${business.warrantyDays}-day warranty on UK-used devices`],
             ['truck', 'Nationwide delivery · same day in Lagos'],
@@ -152,7 +152,7 @@ export default function Me() {
               <Text className="flex-1 font-sora text-sm text-snow">{text}</Text>
             </View>
           ))}
-        </View>
+        </ScrollReveal>
 
         {profile && <Button label="Sign out" variant="ghost" icon="logout" onPress={signOut} />}
         <Text className="text-center font-sora text-xs text-dim">Kovra · {business.tagline}</Text>

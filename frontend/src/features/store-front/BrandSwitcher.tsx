@@ -2,7 +2,7 @@ import type { Product } from '@kovra/shared';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { Chip, SectionHeader } from '@/components/ui/primitives';
 import { ProductCard } from '@/features/catalog/ProductCard';
 import { cellWidth, useLayout } from '@/lib/layout';
@@ -36,9 +36,9 @@ export function BrandSwitcher({ products }: { products: Product[] }) {
       </ScrollView>
       <View className="flex-row flex-wrap" style={{ gap: GAP }}>
         {lineup.map((product) => (
-          <Animated.View key={`${brand}-${product.id}`} entering={FadeIn.duration(420)}>
+          <Reveal key={`${brand}-${product.id}`}>
             <ProductCard product={product} width={width} />
-          </Animated.View>
+          </Reveal>
         ))}
       </View>
     </View>

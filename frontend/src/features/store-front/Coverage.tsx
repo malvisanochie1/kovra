@@ -1,12 +1,12 @@
 import { business, deliveryZones, FREE_DELIVERY_THRESHOLD, formatNaira } from '@kovra/shared';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { useLoop } from '@/hooks/useLoop';
 import { callStore, chatOnWhatsApp } from '@/lib/contact';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 const zones = Object.values(deliveryZones);
 
@@ -37,9 +37,9 @@ export function Coverage() {
 
       <View className="gap-2 md:flex-row">
         {zones.map((zone, index) => (
-          <Animated.View
+          <Reveal
+            index={index}
             key={zone.id}
-            entering={rise(index)}
             className="flex-row items-center justify-between rounded-2xl border border-edge bg-ink px-4 py-3 md:flex-1 md:flex-col md:items-start md:gap-1"
           >
             <View>
@@ -47,7 +47,7 @@ export function Coverage() {
               <Text className="font-sora text-xs text-mist">{zone.eta}</Text>
             </View>
             <Text className="font-sora-semibold text-sm text-gold">{formatNaira(zone.fee)}</Text>
-          </Animated.View>
+          </Reveal>
         ))}
       </View>
 

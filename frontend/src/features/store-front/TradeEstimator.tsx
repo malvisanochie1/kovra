@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { Chip } from '@/components/ui/primitives';
 import { Segmented } from '@/components/ui/Segmented';
+import { Chip } from '@/components/ui/primitives';
 import { useCountUp } from '@/hooks/useCountUp';
 import { colors } from '@/theme/colors';
 

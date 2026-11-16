@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LogoMark } from '@/components/brand/Logo';
 import { Icon, type IconName } from '@/components/ui/Icon';
@@ -84,17 +84,24 @@ export function Dock({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const segment = width / state.routes.length;
   const activeName = state.routes[state.index]?.name;
 
+  // The marker glides to the active section, stretching while it travels and
+  // settling back to a dot, like a drop of liquid gold.
+  const target = rail ? state.index * RAIL_ITEM + RAIL_ITEM / 2 - 14 : state.index * segment + segment / 2 - 9;
+  const position = useSharedValue(target);
+  const stretch = useSharedValue(1);
+  const visible = useSharedValue(activeName === CENTER ? 0 : 1);
+
+  useEffect(() => {
+    position.set(withSpring(target, spring.calm));
+    stretch.set(withSequence(withTiming(2.2, { duration: 140 }), withSpring(1, spring.calm)));
+    visible.set(withSpring(activeName === CENTER ? 0 : 1, spring.calm));
+  }, [activeName, position, stretch, target, visible]);
+
   const marker = useAnimatedStyle(() => {
-    const hidden = activeName === CENTER ? 0 : 1;
+    const s = stretch.get();
     return rail
-      ? {
-          opacity: withSpring(hidden, spring.calm),
-          transform: [{ translateY: withSpring(state.index * RAIL_ITEM + RAIL_ITEM / 2 - 14, spring.calm) }],
-        }
-      : {
-          opacity: withSpring(hidden, spring.calm),
-          transform: [{ translateX: withSpring(state.index * segment + segment / 2 - 9, spring.calm) }],
-        };
+      ? { opacity: visible.get(), height: 28 * s, transform: [{ translateY: position.get() - (28 * s - 28) / 2 }] }
+      : { opacity: visible.get(), width: 18 * s, transform: [{ translateX: position.get() - (18 * s - 18) / 2 }] };
   });
 
   const press = (index: number) => {

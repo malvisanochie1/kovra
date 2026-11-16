@@ -1,20 +1,19 @@
 import { Redirect } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Icon } from '@/components/ui/Icon';
-import { Container } from '@/components/ui/primitives';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { linkFingerprint, unlinkFingerprint } from '@/features/account/fingerprint';
+import { Container } from '@/components/ui/primitives';
 import { FingerprintMark, type ScanState } from '@/features/account/FingerprintMark';
+import { linkFingerprint, unlinkFingerprint } from '@/features/account/fingerprint';
 import { useBiometricSupport } from '@/features/account/useBiometricSupport';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ApiError } from '@/lib/api';
 import { useSession } from '@/store/session';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 type Action = 'link' | 'relink' | 'unlink';
 
@@ -74,7 +73,7 @@ export default function Security() {
       <ScreenHeader title="Security" fallbackHref="/me" />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 40 }}>
         <Container narrow className="gap-7">
-          <Animated.View entering={rise(0)} className="items-center gap-4 rounded-[28px] border border-edge bg-ink-2 px-6 py-8">
+          <Reveal index={0} className="items-center gap-4 rounded-[28px] border border-edge bg-ink-2 px-6 py-8">
             <FingerprintMark state={linkedHere && scan === 'idle' ? 'success' : scan} size={120} />
             <View className="items-center gap-1">
               <Text className="font-sora-semibold text-lg text-snow">Fingerprint sign-in</Text>
@@ -82,7 +81,7 @@ export default function Security() {
                 {linkedHere ? `On for @${profile.username} on this phone` : 'Off on this phone'}
               </Text>
             </View>
-          </Animated.View>
+          </Reveal>
 
           {support && !support.available ? (
             <View className="flex-row gap-3 rounded-2xl border border-edge bg-ink-2 p-4">
@@ -90,7 +89,7 @@ export default function Security() {
               <Text className="flex-1 font-sora text-sm leading-6 text-mist">{support.reason}</Text>
             </View>
           ) : (
-            <Animated.View entering={rise(1)} className="gap-5">
+            <Reveal index={1} className="gap-5">
               {linkedToOther && (
                 <Text className="font-sora text-sm leading-6 text-mist">
                   This phone’s fingerprint is linked to @{fingerprint.username}. Turning it on here will move it to your account.
@@ -106,12 +105,9 @@ export default function Security() {
                 autoComplete="current-password"
               />
               {message && (
-                <Animated.Text
-                  entering={FadeInDown.duration(220)}
-                  className={`font-sora text-sm ${message.tone === 'error' ? 'text-danger' : 'text-success'}`}
-                >
-                  {message.text}
-                </Animated.Text>
+                <Reveal>
+                  <Text className={`font-sora text-sm ${message.tone === 'error' ? 'text-danger' : 'text-success'}`}>{message.text}</Text>
+                </Reveal>
               )}
               {linkedHere ? (
                 <View className="gap-3">
@@ -127,7 +123,7 @@ export default function Security() {
                   onPress={() => run('link')}
                 />
               )}
-            </Animated.View>
+            </Reveal>
           )}
 
           <View className="gap-3 rounded-[22px] border border-edge bg-ink-2 p-5">

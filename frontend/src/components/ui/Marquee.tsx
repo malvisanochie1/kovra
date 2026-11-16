@@ -1,3 +1,4 @@
+import { useIsFocused } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -12,13 +13,14 @@ interface MarqueeProps {
 export function Marquee({ children, speed = 28 }: MarqueeProps) {
   const [width, setWidth] = useState(0);
   const x = useSharedValue(0);
+  const focused = useIsFocused();
 
   useEffect(() => {
-    if (!width) return;
+    if (!width || !focused) return;
     x.set(0);
     x.set(withRepeat(withTiming(-width, { duration: (width / speed) * 1000, easing: Easing.linear }), -1));
     return () => cancelAnimation(x);
-  }, [speed, width, x]);
+  }, [focused, speed, width, x]);
 
   const style = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
 

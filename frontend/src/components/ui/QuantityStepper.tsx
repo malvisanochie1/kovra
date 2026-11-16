@@ -1,8 +1,8 @@
-import { View } from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import { Text, View } from 'react-native';
 import { colors } from '@/theme/colors';
 import { Icon } from './Icon';
 import { PressableScale } from './PressableScale';
+import { Reveal } from '@/components/motion/Reveal';
 
 interface QuantityStepperProps {
   value: number;
@@ -25,15 +25,11 @@ export function QuantityStepper({ value, min = 1, max, onChange }: QuantityStepp
         <Icon name="minus" size={16} color={colors.snow} />
       </PressableScale>
       <View className="h-6 w-7 items-center justify-center overflow-hidden">
-        <Animated.Text
-          key={value}
-          entering={FadeInDown.duration(220)}
-          exiting={FadeOutUp.duration(160)}
-          className="font-sora-semibold text-sm text-snow"
-          accessibilityLabel={`Quantity ${value}`}
-        >
-          {value}
-        </Animated.Text>
+        <Reveal key={value}>
+          <Text className="font-sora-semibold text-sm text-snow" accessibilityLabel={`Quantity ${value}`}>
+            {value}
+          </Text>
+        </Reveal>
       </View>
       <PressableScale
         onPress={() => step(1)}

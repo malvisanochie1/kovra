@@ -12,7 +12,8 @@ export default function DockLayout() {
       tabBar={(props) => <Dock {...props} />}
       screenOptions={{
         headerShown: false,
-        lazy: false,
+        // Sections mount on first visit, so app start only renders the store.
+        lazy: true,
         tabBarPosition: rail ? 'left' : 'bottom',
         sceneStyle: { backgroundColor: colors.ink },
         ...depthTransition,

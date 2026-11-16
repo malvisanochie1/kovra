@@ -2,21 +2,21 @@ import { FREE_DELIVERY_THRESHOLD, formatNaira, unitPrice } from '@kovra/shared';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import Animated, { FadeOutLeft, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
-import { Container, EmptyState } from '@/components/ui/primitives';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Container, EmptyState } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ProductVisual } from '@/features/catalog/ProductVisual';
 import { useCountUp } from '@/hooks/useCountUp';
 import { MAX_QUANTITY, useCart, useCartSubtotal, type CartLine } from '@/store/cart';
 import { useCatalog } from '@/store/catalog';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 import { spring } from '@/theme/motion';
 
 function Line({ line, index }: { line: CartLine; index: number }) {
@@ -27,11 +27,7 @@ function Line({ line, index }: { line: CartLine; index: number }) {
   const variant = [line.color, line.storage].filter(Boolean).join(' · ');
 
   return (
-    <Animated.View
-      entering={rise(index)}
-      exiting={FadeOutLeft.duration(220)}
-      className="flex-row gap-4 rounded-[22px] border border-edge bg-ink-2 p-3"
-    >
+    <Reveal index={index} className="flex-row gap-4 rounded-[22px] border border-edge bg-ink-2 p-3">
       <PressableScale
         onPress={() => router.push({ pathname: '/product/[id]', params: { id: product.id } })}
         className="h-24 w-20 items-center justify-center rounded-2xl bg-ink-3"
@@ -56,7 +52,7 @@ function Line({ line, index }: { line: CartLine; index: number }) {
           <QuantityStepper value={line.quantity} max={Math.min(MAX_QUANTITY, product.stock)} onChange={(q) => setQuantity(line.key, q)} />
         </View>
       </View>
-    </Animated.View>
+    </Reveal>
   );
 }
 

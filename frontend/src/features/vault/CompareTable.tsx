@@ -1,8 +1,7 @@
 import { conditionLabels, formatNaira, type Product } from '@kovra/shared';
 import { ScrollView, Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { ProductVisual } from '@/features/catalog/ProductVisual';
-import { rise } from '@/theme/entering';
 
 const LABEL_WIDTH = 104;
 const COLUMN_WIDTH = 150;
@@ -18,7 +17,7 @@ export function CompareTable({ products }: { products: Product[] }) {
   ];
 
   return (
-    <Animated.View entering={rise(0)} className="overflow-hidden rounded-[24px] border border-edge bg-ink-2">
+    <Reveal index={0} className="overflow-hidden rounded-[24px] border border-edge bg-ink-2">
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View>
           <View className="flex-row border-b border-edge">
@@ -48,6 +47,6 @@ export function CompareTable({ products }: { products: Product[] }) {
           ))}
         </View>
       </ScrollView>
-    </Animated.View>
+    </Reveal>
   );
 }

@@ -2,16 +2,16 @@ import { deliveryFeeFor, formatNaira, unitPrice, zoneForState, type FulfilmentMe
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
-import { Container, Divider } from '@/components/ui/primitives';
+import { OptionCard } from '@/components/ui/OptionCard';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Segmented } from '@/components/ui/Segmented';
+import { Container, Divider } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { StatePicker } from '@/features/checkout/StatePicker';
-import { OptionCard } from '@/components/ui/OptionCard';
 import { ApiError } from '@/lib/api';
 import { isValidEmail, isValidPhone, normalisePhone, type Errors } from '@/lib/validation';
 import { placeOrder } from '@/services/orders';
@@ -169,7 +169,7 @@ export default function Checkout() {
               onChange={setFulfilment}
             />
             {delivering ? (
-              <Animated.View key="delivery" entering={FadeInDown.duration(280)} exiting={FadeOutUp.duration(160)} className="gap-4">
+              <Reveal key="delivery" className="gap-4">
                 <StatePicker value={form.state} error={errors.state} onChange={set('state')} />
                 <Field
                   label="City or area"
@@ -194,11 +194,13 @@ export default function Checkout() {
                   value={form.landmark}
                   onChangeText={set('landmark')}
                 />
-              </Animated.View>
+              </Reveal>
             ) : (
-              <Animated.Text key="pickup" entering={FadeInDown.duration(280)} className="font-sora text-sm leading-6 text-mist">
-                We’ll message you when your order is ready to collect. Bring your order reference.
-              </Animated.Text>
+              <Reveal key="pickup">
+                <Text className="font-sora text-sm leading-6 text-mist">
+                  We’ll message you when your order is ready to collect. Bring your order reference.
+                </Text>
+              </Reveal>
             )}
           </Section>
 

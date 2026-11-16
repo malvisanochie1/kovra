@@ -1,12 +1,12 @@
 import { router, type Href } from 'expo-router';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { Reveal } from '@/components/motion/Reveal';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { DeviceArt } from '@/features/catalog/DeviceArt';
 import { useLoop } from '@/hooks/useLoop';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 interface Tile {
   title: string;
@@ -36,7 +36,7 @@ const used: Tile = {
 
 function SmallTile({ tile, index }: { tile: Tile; index: number }) {
   return (
-    <Animated.View entering={rise(index)} className="flex-1">
+    <Reveal index={index} className="flex-1">
       <PressableScale
         onPress={() => router.push(tile.href)}
         accessibilityLabel={tile.title}
@@ -52,7 +52,7 @@ function SmallTile({ tile, index }: { tile: Tile; index: number }) {
           </Text>
         </View>
       </PressableScale>
-    </Animated.View>
+    </Reveal>
   );
 }
 
@@ -67,7 +67,7 @@ function PhonesTile() {
   }));
 
   return (
-    <Animated.View entering={rise(0)} className="flex-[1.3]">
+    <Reveal index={0} className="flex-[1.3]">
       <PressableScale
         onPress={() => router.push(phones.href)}
         accessibilityLabel={phones.title}
@@ -87,7 +87,7 @@ function PhonesTile() {
           <Text className="font-sora text-[11px] text-mist">{phones.detail}</Text>
         </View>
       </PressableScale>
-    </Animated.View>
+    </Reveal>
   );
 }
 

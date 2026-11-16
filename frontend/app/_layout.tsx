@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import { BagTray } from '@/features/bag/BagTray';
 import { DropToTrayProvider } from '@/features/bag/DropToTray';
 import { useAppFonts } from '@/lib/fonts';
+import { revealApp } from '@/lib/splash';
 import { useCatalog } from '@/store/catalog';
 import { useStoresHydrated } from '@/store/hydration';
 import { colors } from '@/theme/colors';
@@ -24,8 +25,11 @@ export default function RootLayout() {
     void useCatalog.getState().refresh();
   }, []);
 
+  // Entry screens reveal the app themselves once drawn; this is only a safety net.
   useEffect(() => {
-    if (ready) void SplashScreen.hideAsync();
+    if (!ready) return;
+    const timer = setTimeout(revealApp, 2500);
+    return () => clearTimeout(timer);
   }, [ready]);
 
   if (!ready) return null;

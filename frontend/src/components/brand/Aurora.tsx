@@ -1,6 +1,7 @@
-import { memo, useEffect, useId } from 'react';
+import { memo, useId } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useLoop } from '@/hooks/useLoop';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 interface Blob {
@@ -26,13 +27,8 @@ const presets: Record<'hero' | 'page', Blob[]> = {
 };
 
 function GlowBlob({ blob, index }: { blob: Blob; index: number }) {
-  const t = useSharedValue(0);
+  const t = useLoop({ duration: blob.duration, reverse: true });
   const id = `aurora${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-
-  useEffect(() => {
-    t.set(withRepeat(withTiming(1, { duration: blob.duration, easing: Easing.inOut(Easing.sin) }), -1, true));
-    return () => cancelAnimation(t);
-  }, [blob.duration, t]);
 
   const style = useAnimatedStyle(() => {
     const direction = index % 2 === 0 ? 1 : -1;

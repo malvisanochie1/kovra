@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { LogoMark } from '@/components/brand/Logo';
+import { Reveal } from '@/components/motion/Reveal';
+import { ScrollReveal } from '@/components/motion/ScrollReveal';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { PressableScale } from '@/components/ui/PressableScale';
-import { Container, SectionHeader } from '@/components/ui/primitives';
 import { ScrollShell } from '@/components/ui/ScrollShell';
+import { Container, SectionHeader } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ProductRail } from '@/features/catalog/ProductCollections';
 import { BrandSwitcher } from '@/features/store-front/BrandSwitcher';
@@ -16,11 +17,11 @@ import { Promises } from '@/features/store-front/Promises';
 import { Services } from '@/features/store-front/Services';
 import { Spotlight } from '@/features/store-front/Spotlight';
 import { TradeEstimator } from '@/features/store-front/TradeEstimator';
+import { useAfterFirstPaint } from '@/hooks/useAfterFirstPaint';
 import { chatOnWhatsApp } from '@/lib/contact';
 import { useCatalog } from '@/store/catalog';
 import { useSession } from '@/store/session';
 import { colors } from '@/theme/colors';
-import { rise } from '@/theme/entering';
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -31,6 +32,16 @@ export default function Store() {
   useTrayPlacement('dock');
   const products = useCatalog((s) => s.products);
   const name = useSession((s) => s.profile?.name.split(' ')[0]);
+  // Everything below the spotlight renders right after the first frame, so the store opens instantly.
+  const ready = useAfterFirstPaint();
+
+  // Once the store has settled, quietly prepare the other sections so switching is instant.
+  useEffect(() => {
+    if (!ready) return;
+    const sections = ['/explore', '/trade', '/vault', '/me'] as const;
+    const timers = sections.map((href, i) => setTimeout(() => router.prefetch(href), 1500 + i * 600));
+    return () => timers.forEach(clearTimeout);
+  }, [ready]);
 
   const sets = useMemo(
     () => ({
@@ -47,7 +58,7 @@ export default function Store() {
   return (
     <ScrollShell title="Kovra" right={chat}>
       <Container className="gap-5">
-        <Animated.View entering={rise(0)} className="flex-row items-center gap-3">
+        <Reveal index={0} className="flex-row items-center gap-3">
           <LogoMark size={42} />
           <View className="flex-1">
             <Text className="font-sora text-xs text-mist">{greeting()}</Text>
@@ -56,9 +67,9 @@ export default function Store() {
             </Text>
           </View>
           {chat}
-        </Animated.View>
+        </Reveal>
 
-        <Animated.View entering={rise(1)}>
+        <Reveal index={1}>
           <PressableScale
             onPress={() => router.push({ pathname: '/explore', params: { focus: '1' } })}
             pressedScale={0.98}
@@ -71,56 +82,66 @@ export default function Store() {
               <Text className="font-sora-medium text-[10px] text-mist">{products.length} items</Text>
             </View>
           </PressableScale>
-        </Animated.View>
+        </Reveal>
 
-        <Animated.View entering={rise(2)}>
+        <Reveal index={2}>
           <Spotlight products={sets.spotlight} />
-        </Animated.View>
+        </Reveal>
 
-        <View className="gap-3 md:flex-row">
-          <View className="md:flex-1">
-            <Services />
-          </View>
-          <View className="md:flex-1">
-            <TradeEstimator />
-          </View>
-        </View>
+        {ready && (
+          <ScrollReveal className="gap-3 md:flex-row">
+            <View className="md:flex-1">
+              <Services />
+            </View>
+            <View className="md:flex-1">
+              <TradeEstimator />
+            </View>
+          </ScrollReveal>
+        )}
       </Container>
 
-      <View className="my-8">
-        <Promises />
-      </View>
+      {ready && (
+        <>
+          <ScrollReveal className="my-8">
+            <Promises />
+          </ScrollReveal>
 
-      <Container className="gap-10">
-        <View>
-          <SectionHeader eyebrow="Moving fast" title="Trending now" action={{ label: 'All', onPress: () => router.push('/explore') }} />
-          <ProductRail products={sets.trending} />
-        </View>
+          <Container className="gap-10">
+            <ScrollReveal>
+              <SectionHeader eyebrow="Moving fast" title="Trending now" action={{ label: 'All', onPress: () => router.push('/explore') }} />
+              <ProductRail products={sets.trending} />
+            </ScrollReveal>
 
-        <BrandSwitcher products={products} />
+            <ScrollReveal>
+              <BrandSwitcher products={products} />
+            </ScrollReveal>
 
-        <View>
-          <SectionHeader
-            eyebrow="Tested · 30-day warranty"
-            title="UK-used, priced right"
-            action={{ label: 'All', onPress: () => router.push({ pathname: '/explore', params: { condition: 'uk-used' } }) }}
-          />
-          <ProductRail products={sets.used} />
-        </View>
+            <ScrollReveal>
+              <SectionHeader
+                eyebrow="Tested · 30-day warranty"
+                title="UK-used, priced right"
+                action={{ label: 'All', onPress: () => router.push({ pathname: '/explore', params: { condition: 'uk-used' } }) }}
+              />
+              <ProductRail products={sets.used} />
+            </ScrollReveal>
 
-        <View>
-          <SectionHeader
-            eyebrow="Accessories & more"
-            title="Solid gadgets"
-            action={{ label: 'All', onPress: () => router.push({ pathname: '/explore', params: { category: 'gadgets' } }) }}
-          />
-          <ProductRail products={sets.gadgets} />
-        </View>
+            <ScrollReveal>
+              <SectionHeader
+                eyebrow="Accessories & more"
+                title="Solid gadgets"
+                action={{ label: 'All', onPress: () => router.push({ pathname: '/explore', params: { category: 'gadgets' } }) }}
+              />
+              <ProductRail products={sets.gadgets} />
+            </ScrollReveal>
 
-        <Coverage />
+            <ScrollReveal>
+              <Coverage />
+            </ScrollReveal>
 
-        <Text className="text-center font-sora text-xs text-dim">Kovra · Reliable · Trusted · Affordable</Text>
-      </Container>
+            <Text className="text-center font-sora text-xs text-dim">Kovra · Reliable · Trusted · Affordable</Text>
+          </Container>
+        </>
+      )}
     </ScrollShell>
   );
 }
