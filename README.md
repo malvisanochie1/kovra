@@ -119,16 +119,17 @@ Products without a photo keep their vector render, so photos can be added one at
 ### Building the Android app
 
 ```bash
-npm i -g eas-cli
 cd frontend
-eas login
-eas init                 # links the project to your Expo account
-eas update:configure     # enables over-the-air updates
-npm run build:apk        # internal APK you can install directly
-npm run update           # ship JS changes to installed apps without a rebuild
+npx eas-cli@latest login
+npx eas-cli@latest init                  # links the project to your Expo account (once)
+npx eas-cli@latest update:configure      # enables over-the-air updates (once)
+npm run build:apk                        # internal APK you can install directly
+npm run update                           # ship JS changes to installed apps without a rebuild
 ```
 
-For the Play Store, use `eas build -p android --profile production`, which produces an App Bundle. Set `EXPO_PUBLIC_API_URL` in the EAS environment for builds that should talk to the API.
+`npx` runs the Expo CLI without a global install, so no `sudo` is needed. Commit the `app.json` changes that `init` and `update:configure` make.
+
+For the Play Store, use `npx eas-cli@latest build -p android --profile production`, which produces an App Bundle. Set `EXPO_PUBLIC_API_URL` in the EAS environment for builds that should talk to the API.
 
 ---
 

@@ -9,8 +9,8 @@
     "android": "expo start --android",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "build:apk": "eas build --platform android --profile preview",
-    "update": "eas update --channel preview",
+    "build:apk": "npx eas-cli@latest build --platform android --profile preview",
+    "update": "npx eas-cli@latest update --channel preview",
     "lint": "eslint ."
   },
   "dependencies": {
