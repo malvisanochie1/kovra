@@ -26,14 +26,14 @@ export function TradeEstimator() {
   const offer = useCountUp(quote?.offer ?? 0);
 
   return (
-    <View className="gap-5 rounded-[28px] border border-gold/25 bg-ink-2 p-5 md:p-8">
+    <View className="gap-4 rounded-[24px] border border-gold/25 bg-ink-2 p-4 md:gap-5 md:p-8">
       <View className="flex-row items-center gap-3">
-        <View className="h-11 w-11 items-center justify-center rounded-xl bg-gold/15">
+        <View className="h-10 w-10 items-center justify-center rounded-xl bg-gold/15">
           <Icon name="wallet" size={22} color={colors.gold} />
         </View>
         <View className="flex-1">
-          <Text className="font-sora-semibold text-lg text-snow">What’s your phone worth?</Text>
-          <Text className="font-sora text-xs text-mist">Instant estimate. Sell it or swap it towards a new one.</Text>
+          <Text className="font-sora-semibold text-[15px] text-snow md:text-lg">What’s your phone worth?</Text>
+          <Text className="font-sora text-[11px] text-mist md:text-xs">Instant estimate. Sell it or swap it towards a new one.</Text>
         </View>
       </View>
 
@@ -45,15 +45,15 @@ export function TradeEstimator() {
 
       <Segmented options={grades} value={grade} onChange={setGrade} />
 
-      <View className="gap-1 rounded-2xl border border-edge bg-ink p-4">
-        <Text className="font-sora text-xs text-mist">Estimated offer · {model.storage[0]!.label}</Text>
-        <Text numberOfLines={1} adjustsFontSizeToFit className="font-sora-bold text-[30px] text-gold">
+      <View className="gap-0.5 rounded-2xl border border-edge bg-ink px-4 py-3">
+        <Text className="font-sora text-[11px] text-mist">Estimated offer · {model.storage[0]!.label}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit className="font-sora-bold text-2xl text-gold md:text-[30px]">
           {formatNaira(offer)}
         </Text>
         <Text className="font-sora text-[11px] text-dim">Confirmed after a quick inspection</Text>
       </View>
 
-      <View className="flex-row gap-3">
+      <View className="flex-row gap-2.5">
         <View className="flex-1">
           <Button
             label="Sell"

@@ -29,7 +29,7 @@ export function Segmented<T extends string>({ options, value, onChange }: Segmen
     <View
       accessibilityRole="tablist"
       onLayout={(event) => setWidth(event.nativeEvent.layout.width - 8)}
-      className="h-12 flex-row rounded-full border border-edge bg-ink-2 p-1"
+      className="h-10 flex-row rounded-full border border-edge bg-ink-2 p-1 md:h-12"
     >
       {width > 0 && (
         <Animated.View style={[styles.thumb, thumb]}>
@@ -46,7 +46,7 @@ export function Segmented<T extends string>({ options, value, onChange }: Segmen
             onPress={() => onChange(option.value)}
             className="flex-1 items-center justify-center"
           >
-            <Text className={`font-sora-semibold text-sm ${active ? 'text-ink' : 'text-mist'}`}>{option.label}</Text>
+            <Text className={`font-sora-semibold text-xs md:text-sm ${active ? 'text-ink' : 'text-mist'}`}>{option.label}</Text>
           </Pressable>
         );
       })}

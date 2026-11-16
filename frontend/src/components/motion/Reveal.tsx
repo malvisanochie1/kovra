@@ -1,7 +1,7 @@
-import { useEffect, type ReactNode } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
-import { ease, STAGGER_MS } from '@/theme/motion';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Animated, Easing, type StyleProp, type ViewStyle } from 'react-native';
+import { withUniwind } from 'uniwind';
+import { STAGGER_MS } from '@/theme/motion';
 
 interface RevealProps {
   children: ReactNode;
@@ -17,32 +17,40 @@ interface RevealProps {
   style?: StyleProp<ViewStyle>;
 }
 
+const easing = Easing.bezier(0.22, 1, 0.36, 1);
+
+/** React Native's Animated.View with Tailwind `className` support. */
+const AnimatedView = withUniwind(Animated.View);
+
 /**
  * Fades and glides content in when it mounts.
  *
- * Built on plain animated styles rather than Reanimated layout animations: those
- * can leave content invisible on some Android devices until something re-renders,
- * whereas this always ends fully visible.
+ * Runs on React Native's native-driven Animated API, which Android applies
+ * reliably to views anywhere on the page, including ones mounted off-screen. A
+ * safety timer guarantees the content ends fully visible no matter what.
  */
-export function Reveal({ children, index = 0, delay = 0, from = 'below', distance = 18, duration = 520, className, style }: RevealProps) {
-  const progress = useSharedValue(0);
+export function Reveal({ children, index = 0, delay = 0, from = 'below', distance = 16, duration = 480, className, style }: RevealProps) {
+  const [progress] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
-    progress.set(withDelay(delay + index * STAGGER_MS, withTiming(1, { duration, easing: ease })));
+    const total = delay + index * STAGGER_MS;
+    const animation = Animated.timing(progress, { toValue: 1, duration, delay: total, easing, useNativeDriver: true });
+    animation.start();
+    const fallback = setTimeout(() => progress.setValue(1), total + duration + 400);
+    return () => {
+      animation.stop();
+      clearTimeout(fallback);
+    };
   }, [delay, duration, index, progress]);
 
-  const animated = useAnimatedStyle(() => {
-    const p = progress.get();
-    const offset = (1 - p) * distance;
-    return {
-      opacity: p,
-      transform: from === 'right' ? [{ translateX: offset }] : [{ translateY: offset }, { scale: 0.985 + p * 0.015 }],
-    };
-  });
+  const offset = progress.interpolate({ inputRange: [0, 1], outputRange: [distance, 0] });
 
   return (
-    <Animated.View style={[animated, style]} className={className}>
+    <AnimatedView
+      className={className}
+      style={[{ opacity: progress, transform: [from === 'right' ? { translateX: offset } : { translateY: offset }] }, style]}
+    >
       {children}
-    </Animated.View>
+    </AnimatedView>
   );
 }

@@ -18,7 +18,7 @@ function RisingNote({ lift, offset, left }: { lift: SharedValue<number>; offset:
   });
   return (
     <Animated.View
-      style={[{ position: 'absolute', bottom: 60, left }, style]}
+      style={[{ position: 'absolute', bottom: 46, left }, style]}
       className="rounded-md border border-success/50 bg-success/15 px-1.5 py-0.5"
     >
       <Text className="font-sora-bold text-[10px] text-success">₦</Text>
@@ -30,11 +30,11 @@ function RisingNote({ lift, offset, left }: { lift: SharedValue<number>; offset:
 function SellArt() {
   const lift = useLoop({ duration: 2600, easing: Easing.linear });
   return (
-    <View className="h-32 w-28 items-center justify-end">
+    <View className="h-24 w-24 items-center justify-end">
       {[0, 0.33, 0.66].map((offset, i) => (
-        <RisingNote key={offset} lift={lift} offset={offset} left={18 + i * 22} />
+        <RisingNote key={offset} lift={lift} offset={offset} left={12 + i * 20} />
       ))}
-      <DeviceArt kind="phone" brand="Apple" color="#3A3A3C" height={96} />
+      <DeviceArt kind="phone" brand="Apple" color="#3A3A3C" height={76} />
     </View>
   );
 }
@@ -43,21 +43,21 @@ function SellArt() {
 function SwapArt() {
   const t = useLoop({ duration: 3200, reverse: true });
   const a = useAnimatedStyle(() => ({
-    transform: [{ translateX: -22 + t.value * 44 }, { scale: 0.86 + t.value * 0.14 }],
+    transform: [{ translateX: -16 + t.value * 32 }, { scale: 0.86 + t.value * 0.14 }],
     zIndex: t.value > 0.5 ? 2 : 1,
   }));
   const b = useAnimatedStyle(() => ({
-    transform: [{ translateX: 22 - t.value * 44 }, { scale: 1 - t.value * 0.14 }],
+    transform: [{ translateX: 16 - t.value * 32 }, { scale: 1 - t.value * 0.14 }],
     zIndex: t.value > 0.5 ? 1 : 2,
   }));
 
   return (
-    <View className="h-32 w-28 items-center justify-end">
+    <View className="h-24 w-24 items-center justify-end">
       <Animated.View style={[{ position: 'absolute', bottom: 0 }, a]}>
-        <DeviceArt kind="phone" brand="Samsung" color="#8E9CB0" height={96} />
+        <DeviceArt kind="phone" brand="Samsung" color="#8E9CB0" height={76} />
       </Animated.View>
       <Animated.View style={[{ position: 'absolute', bottom: 0 }, b]}>
-        <DeviceArt kind="phone" brand="Apple" color="#2B3A55" height={96} />
+        <DeviceArt kind="phone" brand="Apple" color="#2B3A55" height={76} />
       </Animated.View>
     </View>
   );
@@ -88,17 +88,17 @@ export function ModeCards() {
           <PressableScale
             onPress={() => router.push({ pathname: '/trade/[kind]', params: { kind } })}
             accessibilityLabel={title}
-            className="flex-row items-center gap-4 overflow-hidden rounded-[24px] border border-edge bg-ink-2 p-5"
+            className="flex-row items-center gap-3 overflow-hidden rounded-[22px] border border-edge bg-ink-2 py-4 pl-4 pr-2"
           >
-            <View className="flex-1 gap-2">
-              <Text className={`font-sora-semibold text-[11px] uppercase tracking-[2px] ${accent}`}>
+            <View className="flex-1 gap-1">
+              <Text className={`font-sora-semibold text-[10px] uppercase tracking-[1.8px] ${accent}`}>
                 {kind === 'sell' ? 'Cash out' : 'Trade up'}
               </Text>
-              <Text className="font-sora-bold text-xl text-snow">{title}</Text>
-              <Text className="font-sora text-[13px] leading-5 text-mist">{body}</Text>
-              <View className="mt-1 flex-row items-center gap-1.5">
-                <Text className="font-sora-semibold text-sm text-gold">Start</Text>
-                <Icon name="arrow" size={16} color={colors.gold} />
+              <Text className="font-sora-semibold text-base text-snow md:text-lg">{title}</Text>
+              <Text className="font-sora text-xs leading-[18px] text-mist">{body}</Text>
+              <View className="mt-1.5 flex-row items-center gap-1">
+                <Text className="font-sora-semibold text-xs text-gold">Start</Text>
+                <Icon name="arrow" size={14} color={colors.gold} />
               </View>
             </View>
             <Art />

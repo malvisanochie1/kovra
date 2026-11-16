@@ -88,7 +88,6 @@ export function ProductRail({ products }: { products: Product[] }) {
       initialNumToRender={3}
       maxToRenderPerBatch={3}
       windowSize={5}
-      removeClippedSubviews
       contentContainerStyle={{ gap: GAP, paddingHorizontal: gutter }}
       style={{ marginHorizontal: -gutter }}
     />

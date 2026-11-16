@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { interpolate, runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScrollContext } from '@/components/motion/ScrollReveal';
+import { createScrollBus, ScrollContext } from '@/components/motion/ScrollReveal';
 import { useLayout } from '@/lib/layout';
 import { revealApp } from '@/lib/splash';
 
@@ -25,6 +25,8 @@ export function ScrollShell({ title, heading, right, children }: ScrollShellProp
   const { bottomInset } = useLayout();
   const scrollY = useSharedValue(0);
   const barShown = useSharedValue(false);
+  const lastReported = useSharedValue(-1000);
+  const [bus] = useState(createScrollBus);
   // The bar only takes touches once visible, so it never blocks the content beneath it.
   const [barActive, setBarActive] = useState(false);
 
@@ -34,6 +36,11 @@ export function ScrollShell({ title, heading, right, children }: ScrollShellProp
     if (shown !== barShown.get()) {
       barShown.set(shown);
       runOnJS(setBarActive)(shown);
+    }
+    // Sections only need to hear about meaningful movement, which keeps JS work tiny.
+    if (Math.abs(event.contentOffset.y - lastReported.get()) > 32) {
+      lastReported.set(event.contentOffset.y);
+      runOnJS(bus.publish)(event.contentOffset.y);
     }
   });
 
@@ -54,7 +61,7 @@ export function ScrollShell({ title, heading, right, children }: ScrollShellProp
   });
 
   return (
-    <ScrollContext.Provider value={scrollY}>
+    <ScrollContext.Provider value={bus}>
       <View className="flex-1 bg-ink" onLayout={revealApp}>
         <Animated.ScrollView
           onScroll={onScroll}
@@ -64,10 +71,10 @@ export function ScrollShell({ title, heading, right, children }: ScrollShellProp
         >
           {heading && (
             <Animated.View style={headingStyle} className="mb-6 w-full max-w-[1240px] gap-1 self-center px-5 md:px-8">
-              <Text className="font-sora-bold text-[30px] leading-9 text-snow" accessibilityRole="header">
+              <Text className="font-sora-bold text-[26px] leading-8 text-snow md:text-[32px] md:leading-10" accessibilityRole="header">
                 {heading.title}
               </Text>
-              {heading.subtitle && <Text className="font-sora text-sm text-mist">{heading.subtitle}</Text>}
+              {heading.subtitle && <Text className="font-sora text-[13px] text-mist">{heading.subtitle}</Text>}
             </Animated.View>
           )}
           {children}

@@ -9,7 +9,7 @@ interface IconButtonProps extends Omit<PressableScaleProps, 'children'> {
   color?: string;
 }
 
-export function IconButton({ icon, label, size = 44, color = colors.snow, className = '', ...props }: IconButtonProps) {
+export function IconButton({ icon, label, size = 40, color = colors.snow, className = '', ...props }: IconButtonProps) {
   return (
     <PressableScale
       {...props}

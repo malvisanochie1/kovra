@@ -1,20 +1,39 @@
-import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react';
-import { useWindowDimensions, View, type HostInstance } from 'react-native';
-import Animated, {
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated';
-import { ease } from '@/theme/motion';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Animated, Easing, useWindowDimensions, View, type HostInstance } from 'react-native';
+import { withUniwind } from 'uniwind';
+
+type Listener = (scrollY: number) => void;
+
+export interface ScrollBus {
+  /** Latest scroll offset of the page. */
+  current: () => number;
+  subscribe: (listener: Listener) => () => void;
+}
 
 /** Scroll position of the page a ScrollReveal lives in. Provided by ScrollShell. */
-export const ScrollContext = createContext<SharedValue<number> | null>(null);
+export const ScrollContext = createContext<ScrollBus | null>(null);
 
-/** How far into the viewport (in points) a section travels while it fades in. */
-const REVEAL_SPAN = 140;
+/** Creates the bus a scrolling page uses to tell its sections where it is. */
+export function createScrollBus(): ScrollBus & { publish: (scrollY: number) => void } {
+  let latest = 0;
+  const listeners = new Set<Listener>();
+  return {
+    current: () => latest,
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    publish: (scrollY) => {
+      latest = scrollY;
+      listeners.forEach((listener) => listener(scrollY));
+    },
+  };
+}
+
+const easing = Easing.bezier(0.22, 1, 0.36, 1);
+
+/** React Native's Animated.View with Tailwind `className` support. */
+const AnimatedView = withUniwind(Animated.View);
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -22,55 +41,57 @@ interface ScrollRevealProps {
 }
 
 /**
- * Sections rise into place as they scroll into view, driven entirely on the UI
- * thread from the page's scroll position. Sections already on screen play a short
- * entrance on mount. Once revealed, a section stays revealed.
+ * A section that rises into place the first time it scrolls into view. Sections
+ * already on screen play the entrance straight away. The animation itself runs on
+ * the native driver; JavaScript only decides *when* it starts.
  *
- * Fails open: until the section has been measured it is fully visible.
+ * Fails open: if the section can't be measured, it is simply shown.
  */
 export function ScrollReveal({ children, className }: ScrollRevealProps) {
-  const scrollY = useContext(ScrollContext);
+  const bus = useContext(ScrollContext);
   const { height } = useWindowDimensions();
   const ref = useRef<HostInstance>(null);
-  const top = useSharedValue(-1);
-  const mounted = useSharedValue(0);
-  const revealed = useSharedValue(0);
+  const [progress] = useState(() => new Animated.Value(0));
+  const [top, setTop] = useState<number | null>(null);
+  // Without a scrolling page to watch, there's nothing to wait for.
+  const [shown, setShown] = useState(bus === null);
 
   useEffect(() => {
-    mounted.set(withDelay(60, withTiming(1, { duration: 560, easing: ease })));
-  }, [mounted]);
+    if (shown) {
+      Animated.timing(progress, { toValue: 1, duration: 560, easing, useNativeDriver: true }).start();
+      return;
+    }
+    if (!bus || top === null) return;
+    const check = (scrollY: number) => {
+      if (scrollY + height > top + 40) setShown(true);
+    };
+    check(bus.current());
+    return bus.subscribe(check);
+  }, [bus, height, progress, shown, top]);
 
-  useAnimatedReaction(
-    () => {
-      if (top.get() < 0 || !scrollY) return 1;
-      const visible = scrollY.get() + height - top.get() - 24;
-      return Math.max(0, Math.min(1, visible / REVEAL_SPAN));
-    },
-    (progress) => {
-      if (progress > revealed.get()) revealed.set(progress);
-    },
-    [height, scrollY],
-  );
+  // Never leave a section hidden because measuring failed.
+  useEffect(() => {
+    const fallback = setTimeout(() => top === null && setShown(true), 1200);
+    return () => clearTimeout(fallback);
+  }, [top]);
 
-  const style = useAnimatedStyle(() => {
-    const p = Math.min(mounted.get(), revealed.get());
-    return { opacity: p, transform: [{ translateY: (1 - p) * 28 }, { scale: 0.97 + p * 0.03 }] };
-  });
+  const offset = progress.interpolate({ inputRange: [0, 1], outputRange: [26, 0] });
+  const scale = progress.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] });
 
   return (
-    <Animated.View style={style} className={className}>
+    <AnimatedView className={className} style={{ opacity: progress, transform: [{ translateY: offset }, { scale }] }}>
       <View
         ref={ref}
         collapsable={false}
         onLayout={() =>
           ref.current?.measureInWindow((_x, y) => {
-            // Window position plus the current scroll offset gives the position in the page.
-            if (y || scrollY?.get()) top.set(y + (scrollY?.get() ?? 0));
+            // Window position plus the current scroll offset gives the position within the page.
+            setTop(y + (bus?.current() ?? 0));
           })
         }
       >
         {children}
       </View>
-    </Animated.View>
+    </AnimatedView>
   );
 }

@@ -10,7 +10,7 @@ export function Container({ children, className = '', narrow = false }: { childr
 }
 
 export function Eyebrow({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <Text className={`font-sora-semibold text-[11px] uppercase tracking-[2px] text-gold ${className}`}>{children}</Text>;
+  return <Text className={`font-sora-semibold text-[10px] uppercase tracking-[1.8px] text-gold ${className}`}>{children}</Text>;
 }
 
 interface SectionHeaderProps {
@@ -21,17 +21,21 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, eyebrow, action }: SectionHeaderProps) {
   return (
-    <View className="mb-4 flex-row items-end justify-between gap-4">
-      <View className="flex-1 gap-1">
+    <View className="mb-3 flex-row items-center justify-between gap-4">
+      <View className="flex-1 gap-0.5">
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-        <Text className="font-sora-semibold text-xl text-snow md:text-2xl" accessibilityRole="header">
+        <Text className="font-sora-semibold text-lg text-snow md:text-2xl" accessibilityRole="header">
           {title}
         </Text>
       </View>
       {action && (
-        <PressableScale onPress={action.onPress} className="flex-row items-center gap-1 py-1" accessibilityLabel={action.label}>
-          <Text className="font-sora-medium text-sm text-mist">{action.label}</Text>
-          <Icon name="forward" size={16} color={colors.mist} />
+        <PressableScale
+          onPress={action.onPress}
+          className="h-7 flex-row items-center gap-0.5 rounded-full border border-edge bg-ink-2 pl-3 pr-2"
+          accessibilityLabel={action.label}
+        >
+          <Text className="font-sora-medium text-[11px] text-mist">{action.label}</Text>
+          <Icon name="forward" size={12} color={colors.mist} />
         </PressableScale>
       )}
     </View>
@@ -76,10 +80,10 @@ export function Chip({ label, active = false, icon, onPress }: ChipProps) {
     <PressableScale
       onPress={onPress}
       accessibilityState={{ selected: active }}
-      className={`h-10 flex-row items-center gap-2 rounded-full border px-4 ${active ? 'border-gold bg-gold/15' : 'border-edge bg-ink-2'}`}
+      className={`h-8 flex-row items-center gap-1.5 rounded-full border px-3 md:h-10 md:gap-2 md:px-4 ${active ? 'border-gold bg-gold/15' : 'border-edge bg-ink-2'}`}
     >
-      {icon && <Icon name={icon} size={16} color={active ? colors.gold : colors.mist} />}
-      <Text className={`font-sora-medium text-sm ${active ? 'text-gold' : 'text-mist'}`}>{label}</Text>
+      {icon && <Icon name={icon} size={14} color={active ? colors.gold : colors.mist} />}
+      <Text className={`font-sora-medium text-xs md:text-sm ${active ? 'text-gold' : 'text-mist'}`}>{label}</Text>
     </PressableScale>
   );
 }

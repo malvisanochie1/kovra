@@ -27,7 +27,7 @@ export const Field = forwardRef<TextInputInstance, FieldProps>(function Field(
   return (
     <View className="gap-2">
       <Text className="font-sora-medium text-xs text-mist">{label}</Text>
-      <Animated.View style={frame} className="h-14 flex-row items-center gap-3 rounded-2xl border bg-ink-2 px-4">
+      <Animated.View style={frame} className="h-12 flex-row items-center gap-3 rounded-2xl border bg-ink-2 px-4 md:h-14">
         {icon && <Icon name={icon} size={18} color={focused ? colors.gold : colors.dim} />}
         <TextInput
           ref={ref}
@@ -46,7 +46,7 @@ export const Field = forwardRef<TextInputInstance, FieldProps>(function Field(
             focus.set(withTiming(0, timing.fast));
             onBlur?.(event);
           }}
-          className="h-full flex-1 font-sora text-[15px] text-snow outline-none"
+          className="h-full flex-1 font-sora text-sm text-snow outline-none md:text-[15px]"
         />
       </Animated.View>
       {(error || hint) && <Text className={`font-sora text-xs ${error ? 'text-danger' : 'text-dim'}`}>{error ?? hint}</Text>}

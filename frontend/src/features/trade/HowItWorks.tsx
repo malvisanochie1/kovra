@@ -22,22 +22,22 @@ export function HowItWorks() {
   const line = useAnimatedStyle(() => ({ height: `${progress.value * 100}%` }));
 
   return (
-    <View className="rounded-[24px] border border-edge bg-ink-2 p-5">
-      <Text className="mb-5 font-sora-semibold text-lg text-snow">How trading works</Text>
+    <View className="rounded-[22px] border border-edge bg-ink-2 p-4 md:p-5">
+      <Text className="mb-4 font-sora-semibold text-base text-snow md:text-lg">How trading works</Text>
       <View>
         <View className="absolute bottom-6 left-[19px] top-6 w-0.5 overflow-hidden rounded-full bg-white/10">
           <Animated.View style={line} className="w-full bg-gold" />
         </View>
         {steps.map((step, index) => (
-          <View key={step.title} className={`flex-row gap-4 ${index < steps.length - 1 ? 'pb-5' : ''}`}>
+          <View key={step.title} className={`flex-row gap-4 ${index < steps.length - 1 ? 'pb-4' : ''}`}>
             <View className="h-10 w-10 items-center justify-center rounded-xl border border-gold/40 bg-ink-3">
               <Icon name={step.icon} size={18} color={colors.gold} />
             </View>
             <View className="flex-1 justify-center gap-0.5">
-              <Text className="font-sora-semibold text-[15px] text-snow">
+              <Text className="font-sora-semibold text-sm text-snow">
                 {index + 1}. {step.title}
               </Text>
-              <Text className="font-sora text-[13px] text-mist">{step.body}</Text>
+              <Text className="font-sora text-xs text-mist">{step.body}</Text>
             </View>
           </View>
         ))}

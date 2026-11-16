@@ -39,7 +39,7 @@ export function Button({
   className = '',
   ...props
 }: ButtonProps) {
-  const height = size === 'lg' ? 'h-14' : 'h-11';
+  const height = size === 'lg' ? 'h-12 md:h-14' : 'h-10 md:h-11';
   const color = textColor[variant];
 
   return (
@@ -59,10 +59,10 @@ export function Button({
           <ActivityIndicator color={color} />
         ) : (
           <>
-            {icon && <Icon name={icon} size={size === 'lg' ? 20 : 18} color={color} strokeWidth={2} />}
+            {icon && <Icon name={icon} size={size === 'lg' ? 18 : 16} color={color} strokeWidth={2} />}
             <Text
               style={{ color }}
-              className={`font-sora-semibold ${size === 'lg' ? 'text-base' : 'text-sm'} tracking-tight`}
+              className={`font-sora-semibold ${size === 'lg' ? 'text-[15px] md:text-base' : 'text-[13px] md:text-sm'} tracking-tight`}
               numberOfLines={1}
             >
               {label}

@@ -22,13 +22,13 @@ export default function Trade() {
 
   return (
     <ScrollShell title="Trade">
-      <Container className="gap-6">
-        <Reveal index={0} className="gap-2">
-          <Text className="font-sora-semibold text-[11px] uppercase tracking-[2px] text-gold">Buy · Sell · Swap</Text>
-          <Text className="font-sora-bold text-[30px] leading-9 text-snow" accessibilityRole="header">
-            Your old phone{'\n'}is worth more here.
+      <Container className="gap-5">
+        <Reveal index={0} className="gap-1.5">
+          <Text className="font-sora-semibold text-[10px] uppercase tracking-[1.8px] text-gold">Buy · Sell · Swap</Text>
+          <Text className="font-sora-bold text-[22px] leading-7 text-snow md:text-[30px] md:leading-9" accessibilityRole="header">
+            Your old phone is worth more here.
           </Text>
-          <Text className="font-sora text-sm leading-6 text-mist">
+          <Text className="font-sora text-[13px] leading-5 text-mist">
             Sell it for cash or swap it towards your next device. Swapping is always allowed.
           </Text>
         </Reveal>
@@ -46,11 +46,11 @@ export default function Trade() {
               <Reveal
                 index={index}
                 key={grade}
-                className={`flex-row items-center gap-4 rounded-2xl border bg-ink-2 px-4 py-3.5 ${gradeTone[grade]}`}
+                className={`flex-row items-center gap-4 rounded-2xl border bg-ink-2 px-4 py-3 ${gradeTone[grade]}`}
               >
                 <View className="flex-1">
-                  <Text className="font-sora-semibold text-[15px] text-snow">{gradeLabels[grade].title}</Text>
-                  <Text className="font-sora text-xs text-mist">{gradeLabels[grade].detail}</Text>
+                  <Text className="font-sora-semibold text-sm text-snow">{gradeLabels[grade].title}</Text>
+                  <Text className="font-sora text-[11px] text-mist">{gradeLabels[grade].detail}</Text>
                 </View>
               </Reveal>
             ))}
