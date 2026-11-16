@@ -1,0 +1,26 @@
+{
+  "name": "kovra",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "devDependencies": {
+    "prettier": "^3.10.1"
+  },
+  "version": "1.0.0",
+  "description": "Kovra: phones, gadgets, buy/sell and swap. Expo app and Node API.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "app": "npm run start -w @kovra/frontend",
+    "api": "npm run dev -w @kovra/backend",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint -w @kovra/frontend",
+    "test": "npm test -w @kovra/backend",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  }
+}

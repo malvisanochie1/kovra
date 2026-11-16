@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+@import 'uniwind';
+
+@source '../app';
+
+/*
+ * Kovra design tokens. Midnight navy surfaces, champagne gold for emphasis and a
+ * single cool azure accent for interactive states. Keep src/theme/colors.ts in sync.
+ */
+@theme {
+  --color-ink: #05070f;
+  --color-ink-2: #0a0f1e;
+  --color-ink-3: #111933;
+  --color-ink-4: #1a2448;
+  --color-edge: rgb(255 255 255 / 0.08);
+  --color-edge-strong: rgb(255 255 255 / 0.14);
+
+  --color-gold: #e3bf6e;
+  --color-gold-soft: #f4dea4;
+  --color-gold-deep: #b48a3a;
+  --color-azure: #5b7cff;
+
+  --color-snow: #f3f5fa;
+  --color-mist: #9ba5c2;
+  --color-dim: #5f6a8a;
+  --color-success: #3fd69a;
+  --color-danger: #ff6b7a;
+
+  --font-sora: 'Sora-Regular';
+  --font-sora-medium: 'Sora-Medium';
+  --font-sora-semibold: 'Sora-SemiBold';
+  --font-sora-bold: 'Sora-Bold';
+}

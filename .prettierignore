@@ -1,0 +1,7 @@
+node_modules
+dist
+.expo
+backend/drizzle
+backend/data
+frontend/src/uniwind-types.d.ts
+package-lock.json
