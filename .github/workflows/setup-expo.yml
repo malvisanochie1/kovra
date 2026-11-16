@@ -1,0 +1,40 @@
+name: Set up Expo project
+
+# Run once. Links the app to the Expo account behind the EXPO_TOKEN secret,
+# enables over-the-air updates and commits the resulting app.json.
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci
+
+      - name: Link the Expo project
+        working-directory: frontend
+        run: |
+          eas init --non-interactive --force
+          eas update:configure --non-interactive
+
+      - name: Commit app.json
+        run: |
+          git config user.name "malvisanochie1"
+          git config user.email "malvisanochie1@users.noreply.github.com"
+          git add frontend/app.json
+          git diff --cached --quiet || git commit -m "Link the app to Expo"
+          git push

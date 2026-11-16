@@ -118,18 +118,14 @@ Products without a photo keep their vector render, so photos can be added one at
 
 ### Building the Android app
 
-```bash
-cd frontend
-npx eas-cli@latest login
-npx eas-cli@latest init                  # links the project to your Expo account (once)
-npx eas-cli@latest update:configure      # enables over-the-air updates (once)
-npm run build:apk                        # internal APK you can install directly
-npm run update                           # ship JS changes to installed apps without a rebuild
-```
+Builds run on Expo's servers, triggered from GitHub Actions. Nothing needs installing locally.
 
-`npx` runs the Expo CLI without a global install, so no `sudo` is needed. Commit the `app.json` changes that `init` and `update:configure` make.
+1. **Once:** create an Expo access token (expo.dev → Account settings → Access tokens) and add it to this repository as an Actions secret named `EXPO_TOKEN` (Settings → Secrets and variables → Actions).
+2. **Once:** run the **Set up Expo project** workflow (Actions tab → Run workflow). It links the app to your Expo account and commits the project ID.
+3. **Every APK:** run **Build Android APK**. When it finishes, the APK is attached to a new GitHub Release, which gives a permanent download link.
+4. **JavaScript changes** pushed to `main` reach installed apps automatically through **Publish OTA update**. Close and reopen the app twice to load them. Native changes (a new library, or a change to native config in `app.json`) need a version bump in `app.json` and a new APK.
 
-For the Play Store, use `npx eas-cli@latest build -p android --profile production`, which produces an App Bundle. Set `EXPO_PUBLIC_API_URL` in the EAS environment for builds that should talk to the API.
+To build from your own machine instead, run `npx eas-cli@latest build -p android --profile preview` inside `frontend/`. Use `--profile production` for a Play Store App Bundle.
 
 ---
 

@@ -1,0 +1,45 @@
+name: Publish OTA update
+
+# Sends JavaScript changes straight to installed apps on the preview channel.
+# Native changes (new libraries, app.json native config) still need a new APK.
+on:
+  push:
+    branches: [main]
+    paths:
+      - frontend/**
+      - shared/**
+
+concurrency:
+  group: ota-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip until the Expo project is linked
+        id: linked
+        run: echo "ok=$(node -p "Boolean(require('./frontend/app.json').expo.extra?.eas?.projectId)")" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: steps.linked.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        if: steps.linked.outputs.ok == 'true'
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - if: steps.linked.outputs.ok == 'true'
+        run: npm ci
+
+      - if: steps.linked.outputs.ok == 'true'
+        working-directory: frontend
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: eas update --channel preview --non-interactive --message "$MESSAGE"
