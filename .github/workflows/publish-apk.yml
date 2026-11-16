@@ -19,10 +19,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # EAS reads the app config, which loads the Expo config plugins from node_modules.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: npm ci
 
       - name: Wait and publish release
         working-directory: frontend
