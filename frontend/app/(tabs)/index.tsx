@@ -76,10 +76,10 @@ export default function Store() {
             onPress={() => router.push({ pathname: '/explore', params: { focus: '1' } })}
             pressedScale={0.98}
             accessibilityLabel="Search phones and gadgets"
-            className="h-14 flex-row items-center gap-3 rounded-2xl border border-edge bg-ink-2 px-4"
+            className="h-12 flex-row items-center gap-3 rounded-2xl border border-edge bg-ink-2 px-4 md:h-14"
           >
-            <Icon name="search" size={20} color={colors.dim} />
-            <Text className="flex-1 font-sora text-[15px] text-dim">Search phones & gadgets</Text>
+            <Icon name="search" size={18} color={colors.dim} />
+            <Text className="flex-1 font-sora text-sm text-dim">Search phones & gadgets</Text>
             <View className="rounded-lg border border-edge px-2 py-1">
               <Text className="font-sora-medium text-[10px] text-mist">{products.length} items</Text>
             </View>
@@ -91,7 +91,7 @@ export default function Store() {
         </Reveal>
 
         {ready && (
-          <ScrollReveal className="gap-3 md:flex-row">
+          <ScrollReveal className="gap-5 md:flex-row">
             <View className="md:flex-1">
               <Services />
             </View>

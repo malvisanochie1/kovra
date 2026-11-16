@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, Platform, useWindowDimensions, View, type HostInstance } from 'react-native';
-import { withUniwind } from 'uniwind';
 
 type Listener = (scrollY: number) => void;
 
@@ -33,9 +32,6 @@ export function createScrollBus(): ScrollBus & { publish: (scrollY: number) => v
 /** The browser has no native animation module; it runs the same animation in JS. */
 const nativeDriver = Platform.OS !== 'web';
 const easing = Easing.bezier(0.22, 1, 0.36, 1);
-
-/** React Native's Animated.View with Tailwind `className` support. */
-const AnimatedView = withUniwind(Animated.View);
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -81,9 +77,10 @@ export function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
   const scale = progress.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] });
 
   return (
-    <AnimatedView className={className} style={{ opacity: progress, transform: [{ translateY: offset }, { scale }] }}>
+    <Animated.View style={{ opacity: progress, transform: [{ translateY: offset }, { scale }] }}>
       <View
         ref={ref}
+        className={className}
         collapsable={false}
         onLayout={() =>
           ref.current?.measureInWindow((_x, y) => {
@@ -94,6 +91,6 @@ export function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
       >
         {children}
       </View>
-    </AnimatedView>
+    </Animated.View>
   );
 }

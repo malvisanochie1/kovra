@@ -26,7 +26,7 @@ export function TradeEstimator() {
   const offer = useCountUp(quote?.offer ?? 0);
 
   return (
-    <View className="gap-4 rounded-[24px] border border-gold/25 bg-ink-2 p-4 md:gap-5 md:p-8">
+    <View className="gap-4 rounded-[22px] border border-gold/25 bg-ink-2 p-4 md:gap-5 md:p-8">
       <View className="flex-row items-center gap-3">
         <View className="h-10 w-10 items-center justify-center rounded-xl bg-gold/15">
           <Icon name="wallet" size={22} color={colors.gold} />
