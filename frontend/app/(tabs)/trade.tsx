@@ -2,6 +2,7 @@ import { findTradeModel, formatNaira, gradeLabels, type DeviceGrade } from '@kov
 import { Text, View } from 'react-native';
 import { Reveal } from '@/components/motion/Reveal';
 import { ScrollReveal } from '@/components/motion/ScrollReveal';
+import { SceneBanner } from '@/components/ui/SceneBanner';
 import { ScrollShell } from '@/components/ui/ScrollShell';
 import { Badge, Container, SectionHeader } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
@@ -23,14 +24,18 @@ export default function Trade() {
   return (
     <ScrollShell title="Trade">
       <Container className="gap-5">
-        <Reveal index={0} className="gap-1.5">
-          <Text className="font-sora-semibold text-[10px] uppercase tracking-[1.8px] text-gold">Buy · Sell · Swap</Text>
-          <Text className="font-sora-bold text-[22px] leading-7 text-snow md:text-[30px] md:leading-9" accessibilityRole="header">
-            Your old phone is worth more here.
-          </Text>
-          <Text className="font-sora text-[13px] leading-5 text-mist">
-            Sell it for cash or swap it towards your next device. Swapping is always allowed.
-          </Text>
+        <Reveal index={0}>
+          <SceneBanner scene="service-swap" height={200}>
+            <View className="gap-1">
+              <Text className="font-sora-semibold text-[10px] uppercase tracking-[1.8px] text-gold">Buy · Sell · Swap</Text>
+              <Text className="font-sora-bold text-[22px] leading-7 text-snow md:text-[30px] md:leading-9" accessibilityRole="header">
+                Your old phone is worth more here.
+              </Text>
+              <Text className="font-sora text-xs leading-[18px] text-mist">
+                Sell it for cash or swap it towards your next device. Swapping is always allowed.
+              </Text>
+            </View>
+          </SceneBanner>
         </Reveal>
 
         <ModeCards />
@@ -42,6 +47,7 @@ export default function Trade() {
 
           <View className="gap-3 md:flex-1">
             <SectionHeader eyebrow="Be honest, get paid fast" title="How we grade" />
+            <SceneBanner scene="trade-inspection" height={128} />
             {(Object.keys(gradeLabels) as DeviceGrade[]).map((grade, index) => (
               <Reveal
                 index={index}

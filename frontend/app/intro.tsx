@@ -1,7 +1,9 @@
 import { business } from '@kovra/shared';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { LinearGradient as Fade } from 'expo-linear-gradient';
+import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedProps,
@@ -14,6 +16,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Aurora } from '@/components/brand/Aurora';
+import { scenes } from '@/lib/scenes';
 import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
 import { useLoop } from '@/hooks/useLoop';
@@ -113,6 +116,10 @@ export default function Intro() {
   return (
     <View className="flex-1 bg-ink" onLayout={revealApp}>
       <Aurora variant="hero" />
+      <Reveal delay={600} duration={1400} distance={0} style={StyleSheet.absoluteFill}>
+        <Image source={scenes['intro-hero']} style={[StyleSheet.absoluteFill, { opacity: 0.5 }]} contentFit="cover" />
+        <Fade colors={['rgba(5,7,15,0.2)', 'rgba(5,7,15,0.55)', '#05070F']} locations={[0, 0.55, 0.9]} style={StyleSheet.absoluteFill} />
+      </Reveal>
       <View className="flex-1 items-center justify-center px-8">
         <IgnitionMark />
 

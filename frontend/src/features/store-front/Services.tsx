@@ -1,11 +1,11 @@
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, type Href } from 'expo-router';
-import { Text, View } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { StyleSheet, Text, View } from 'react-native';
 import { Reveal } from '@/components/motion/Reveal';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
-import { DeviceArt } from '@/features/catalog/DeviceArt';
-import { useLoop } from '@/hooks/useLoop';
+import { scenes, type SceneName } from '@/lib/scenes';
 import { colors } from '@/theme/colors';
 
 interface Tile {
@@ -13,26 +13,41 @@ interface Tile {
   detail: string;
   icon: IconName;
   href: Href;
+  scene: SceneName;
 }
 
 const phones: Tile = {
   title: 'All types of phones',
   detail: 'Android & iPhone, new and UK-used',
   icon: 'device',
+  scene: 'service-phones',
   href: { pathname: '/explore', params: { category: 'phones' } },
 };
 const gadgets: Tile = {
   title: 'Solid gadgets',
   detail: 'Audio, watches, power',
   icon: 'headphones',
+  scene: 'service-gadgets',
   href: { pathname: '/explore', params: { category: 'gadgets' } },
 };
 const used: Tile = {
   title: 'Buy & sell used',
   detail: 'Cash for your phone',
   icon: 'wallet',
+  scene: 'service-buy-sell',
   href: { pathname: '/trade/[kind]', params: { kind: 'sell' } },
 };
+
+/** Darkens the lower part of a photo so the copy on top stays readable. */
+function Scrim() {
+  return (
+    <LinearGradient
+      colors={['rgba(5,7,15,0.05)', 'rgba(5,7,15,0.55)', 'rgba(5,7,15,0.94)']}
+      locations={[0, 0.5, 1]}
+      style={StyleSheet.absoluteFill}
+    />
+  );
+}
 
 function SmallTile({ tile, index }: { tile: Tile; index: number }) {
   return (
@@ -40,13 +55,15 @@ function SmallTile({ tile, index }: { tile: Tile; index: number }) {
       <PressableScale
         onPress={() => router.push(tile.href)}
         accessibilityLabel={tile.title}
-        className="flex-1 justify-between gap-6 rounded-[22px] border border-edge bg-ink-2 p-4"
+        className="min-h-[104px] flex-1 justify-between overflow-hidden rounded-[22px] border border-edge bg-ink-2 p-3.5"
       >
-        <View className="h-10 w-10 items-center justify-center rounded-xl bg-ink-3">
-          <Icon name={tile.icon} size={20} color={colors.gold} />
+        <Image source={scenes[tile.scene]} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} />
+        <Scrim />
+        <View className="h-8 w-8 items-center justify-center rounded-lg bg-ink/70">
+          <Icon name={tile.icon} size={16} color={colors.gold} />
         </View>
         <View className="gap-0.5">
-          <Text className="font-sora-semibold text-sm text-snow">{tile.title}</Text>
+          <Text className="font-sora-semibold text-[13px] text-snow">{tile.title}</Text>
           <Text numberOfLines={1} className="font-sora text-[11px] text-mist">
             {tile.detail}
           </Text>
@@ -56,33 +73,18 @@ function SmallTile({ tile, index }: { tile: Tile; index: number }) {
   );
 }
 
-/** The large tile: a fan of devices that breathes slowly. */
+/** The large tile, led by a photo of the range. */
 function PhonesTile() {
-  const breathe = useLoop({ duration: 5200, reverse: true });
-  const left = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${-16 - breathe.value * 4}deg` }, { translateX: -22 - breathe.value * 4 }],
-  }));
-  const right = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${16 + breathe.value * 4}deg` }, { translateX: 22 + breathe.value * 4 }],
-  }));
-
   return (
     <Reveal index={0} className="flex-[1.3]">
       <PressableScale
         onPress={() => router.push(phones.href)}
         accessibilityLabel={phones.title}
-        className="flex-1 overflow-hidden rounded-[22px] border border-edge bg-ink-3 p-4"
+        className="min-h-[220px] flex-1 justify-end overflow-hidden rounded-[22px] border border-edge bg-ink-3 p-4"
       >
-        <View className="h-28 items-center justify-end">
-          <Animated.View style={[{ position: 'absolute', bottom: 0 }, left]}>
-            <DeviceArt kind="phone" brand="Samsung" color="#8E9CB0" height={92} />
-          </Animated.View>
-          <Animated.View style={[{ position: 'absolute', bottom: 0 }, right]}>
-            <DeviceArt kind="phone" brand="Google" color="#2B3A55" height={92} />
-          </Animated.View>
-          <DeviceArt kind="phone" brand="Apple" color="#D9733B" height={104} />
-        </View>
-        <View className="mt-4 gap-0.5">
+        <Image source={scenes[phones.scene]} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} />
+        <Scrim />
+        <View className="gap-0.5">
           <Text className="font-sora-semibold text-base text-snow">{phones.title}</Text>
           <Text className="font-sora text-[11px] text-mist">{phones.detail}</Text>
         </View>

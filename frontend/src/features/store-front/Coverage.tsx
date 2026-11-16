@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Reveal } from '@/components/motion/Reveal';
 import { Button } from '@/components/ui/Button';
+import { SceneBanner } from '@/components/ui/SceneBanner';
 import { Icon } from '@/components/ui/Icon';
 import { useLoop } from '@/hooks/useLoop';
 import { callStore, chatOnWhatsApp } from '@/lib/contact';
@@ -26,11 +27,12 @@ function Beacon() {
 /** Delivery promise from the flyer: zones, fees and how to reach the store. */
 export function Coverage() {
   return (
-    <View className="gap-5 rounded-[28px] border border-edge bg-ink-2 p-5 md:p-8">
+    <View className="gap-4 rounded-[28px] border border-edge bg-ink-2 p-4 md:p-8">
+      <SceneBanner scene="delivery-nationwide" height={132} className="rounded-[18px]" />
       <View className="flex-row items-center gap-4">
         <Beacon />
         <View className="flex-1">
-          <Text className="font-sora-semibold text-lg text-snow">We deliver nationwide</Text>
+          <Text className="font-sora-semibold text-base text-snow md:text-lg">We deliver nationwide</Text>
           <Text className="font-sora text-xs text-mist">Free on orders over {formatNaira(FREE_DELIVERY_THRESHOLD)}</Text>
         </View>
       </View>

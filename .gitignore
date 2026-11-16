@@ -6,3 +6,7 @@ dist/
 *.log
 .DS_Store
 *.tsbuildinfo
+
+# Raw image-generator exports; the app ships the optimised WebP copies
+frontend/assets/products/*.jpg
+frontend/assets/products/*.png

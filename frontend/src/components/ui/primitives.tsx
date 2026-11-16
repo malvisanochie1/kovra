@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import { colors } from '@/theme/colors';
@@ -93,18 +94,24 @@ export function Divider({ className = '' }: { className?: string }) {
 }
 
 interface EmptyStateProps {
+  /** A photo shown in place of the icon. */
+  image?: number;
   icon: IconName;
   title: string;
   body: string;
   children?: ReactNode;
 }
 
-export function EmptyState({ icon, title, body, children }: EmptyStateProps) {
+export function EmptyState({ icon, image, title, body, children }: EmptyStateProps) {
   return (
     <View className="items-center gap-3 px-8 py-16">
-      <View className="mb-2 h-20 w-20 items-center justify-center rounded-full border border-gold/30 bg-gold/10">
-        <Icon name={icon} size={34} color={colors.gold} strokeWidth={1.5} />
-      </View>
+      {image ? (
+        <Image source={image} style={{ width: 220, height: 165, borderRadius: 24, marginBottom: 8 }} contentFit="cover" transition={200} />
+      ) : (
+        <View className="mb-2 h-20 w-20 items-center justify-center rounded-full border border-gold/30 bg-gold/10">
+          <Icon name={icon} size={34} color={colors.gold} strokeWidth={1.5} />
+        </View>
+      )}
       <Text className="text-center font-sora-semibold text-xl text-snow">{title}</Text>
       <Text className="max-w-[320px] text-center font-sora text-sm leading-5 text-mist">{body}</Text>
       {children && <View className="mt-4 w-full max-w-[320px]">{children}</View>}

@@ -12,11 +12,13 @@ import { Container, SectionHeader } from '@/components/ui/primitives';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ProductRail } from '@/features/catalog/ProductCollections';
 import { BrandSwitcher } from '@/features/store-front/BrandSwitcher';
+import { CategoryTiles } from '@/features/store-front/CategoryTiles';
 import { Coverage } from '@/features/store-front/Coverage';
 import { Promises } from '@/features/store-front/Promises';
 import { Services } from '@/features/store-front/Services';
 import { Spotlight } from '@/features/store-front/Spotlight';
 import { TradeEstimator } from '@/features/store-front/TradeEstimator';
+import { WarrantyNote } from '@/features/store-front/WarrantyNote';
 import { useAfterFirstPaint } from '@/hooks/useAfterFirstPaint';
 import { chatOnWhatsApp } from '@/lib/contact';
 import { useCatalog } from '@/store/catalog';
@@ -122,6 +124,7 @@ export default function Store() {
                 title="UK-used, priced right"
                 action={{ label: 'All', onPress: () => router.push({ pathname: '/explore', params: { condition: 'uk-used' } }) }}
               />
+              <WarrantyNote />
               <ProductRail products={sets.used} />
             </ScrollReveal>
 
@@ -131,6 +134,8 @@ export default function Store() {
                 title="Solid gadgets"
                 action={{ label: 'All', onPress: () => router.push({ pathname: '/explore', params: { category: 'gadgets' } }) }}
               />
+              <CategoryTiles />
+              <View className="h-4" />
               <ProductRail products={sets.gadgets} />
             </ScrollReveal>
 

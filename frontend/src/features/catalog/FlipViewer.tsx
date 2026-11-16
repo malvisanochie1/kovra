@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { PressableScale } from '@/components/ui/PressableScale';
-import { ProductVisual } from './ProductVisual';
+import { productPhotos } from './product-photos';
+import { heroSide, ProductVisual, type ProductSide } from './ProductVisual';
 import { TiltStage } from './TiltStage';
 
 interface FlipViewerProps {
@@ -17,9 +18,12 @@ interface FlipViewerProps {
  * between its back and its screen with a 3D flip.
  */
 export function FlipViewer({ product, color, height }: FlipViewerProps) {
-  const canFlip = product.art === 'phone';
-  const [side, setSide] = useState<'back' | 'front'>('back');
-  const [shown, setShown] = useState<'back' | 'front'>('back');
+  const isPhone = product.art === 'phone';
+  const canFlip = isPhone || Boolean(productPhotos[product.id]);
+  const hero = heroSide(product);
+  const sides: ProductSide[] = hero === 'back' ? ['back', 'front'] : ['front', 'back'];
+  const [side, setSide] = useState<ProductSide>(hero);
+  const [shown, setShown] = useState<ProductSide>(hero);
   const turn = useSharedValue(0);
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export function FlipViewer({ product, color, height }: FlipViewerProps) {
       </TiltStage>
       {canFlip && (
         <View className="flex-row rounded-xl border border-edge bg-ink-2 p-1">
-          {(['back', 'front'] as const).map((value) => (
+          {sides.map((value) => (
             <PressableScale
               key={value}
               onPress={() => setSide(value)}
@@ -51,7 +55,7 @@ export function FlipViewer({ product, color, height }: FlipViewerProps) {
               className={`rounded-lg px-4 py-2 ${side === value ? 'bg-ink-4' : ''}`}
             >
               <Text className={`font-sora-medium text-xs ${side === value ? 'text-gold' : 'text-mist'}`}>
-                {value === 'back' ? 'Back' : 'Screen'}
+                {isPhone ? (value === 'back' ? 'Back' : 'Screen') : value === hero ? 'Main' : 'Detail'}
               </Text>
             </PressableScale>
           ))}

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Animated, Easing, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, Easing, Platform, type StyleProp, type ViewStyle } from 'react-native';
 import { withUniwind } from 'uniwind';
 import { STAGGER_MS } from '@/theme/motion';
 
@@ -17,6 +17,8 @@ interface RevealProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/** The browser has no native animation module; it runs the same animation in JS. */
+const nativeDriver = Platform.OS !== 'web';
 const easing = Easing.bezier(0.22, 1, 0.36, 1);
 
 /** React Native's Animated.View with Tailwind `className` support. */
@@ -29,12 +31,21 @@ const AnimatedView = withUniwind(Animated.View);
  * reliably to views anywhere on the page, including ones mounted off-screen. A
  * safety timer guarantees the content ends fully visible no matter what.
  */
-export function Reveal({ children, index = 0, delay = 0, from = 'below', distance = 16, duration = 480, className, style }: RevealProps) {
+export function Reveal({
+  children,
+  index = 0,
+  delay = 0,
+  from = 'below',
+  distance = 16,
+  duration = 480,
+  className = '',
+  style,
+}: RevealProps) {
   const [progress] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const total = delay + index * STAGGER_MS;
-    const animation = Animated.timing(progress, { toValue: 1, duration, delay: total, easing, useNativeDriver: true });
+    const animation = Animated.timing(progress, { toValue: 1, duration, delay: total, easing, useNativeDriver: nativeDriver });
     animation.start();
     const fallback = setTimeout(() => progress.setValue(1), total + duration + 400);
     return () => {

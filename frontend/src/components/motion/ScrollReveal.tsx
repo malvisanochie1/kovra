@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Animated, Easing, useWindowDimensions, View, type HostInstance } from 'react-native';
+import { Animated, Easing, Platform, useWindowDimensions, View, type HostInstance } from 'react-native';
 import { withUniwind } from 'uniwind';
 
 type Listener = (scrollY: number) => void;
@@ -30,6 +30,8 @@ export function createScrollBus(): ScrollBus & { publish: (scrollY: number) => v
   };
 }
 
+/** The browser has no native animation module; it runs the same animation in JS. */
+const nativeDriver = Platform.OS !== 'web';
 const easing = Easing.bezier(0.22, 1, 0.36, 1);
 
 /** React Native's Animated.View with Tailwind `className` support. */
@@ -47,7 +49,7 @@ interface ScrollRevealProps {
  *
  * Fails open: if the section can't be measured, it is simply shown.
  */
-export function ScrollReveal({ children, className }: ScrollRevealProps) {
+export function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
   const bus = useContext(ScrollContext);
   const { height } = useWindowDimensions();
   const ref = useRef<HostInstance>(null);
@@ -58,7 +60,7 @@ export function ScrollReveal({ children, className }: ScrollRevealProps) {
 
   useEffect(() => {
     if (shown) {
-      Animated.timing(progress, { toValue: 1, duration: 560, easing, useNativeDriver: true }).start();
+      Animated.timing(progress, { toValue: 1, duration: 560, easing, useNativeDriver: nativeDriver }).start();
       return;
     }
     if (!bus || top === null) return;

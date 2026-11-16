@@ -11,6 +11,7 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Container, EmptyState } from '@/components/ui/primitives';
+import { scenes } from '@/lib/scenes';
 import { useTrayPlacement } from '@/features/bag/useTrayPlacement';
 import { ProductVisual } from '@/features/catalog/ProductVisual';
 import { useCountUp } from '@/hooks/useCountUp';
@@ -97,6 +98,7 @@ export default function Bag() {
       {lines.length === 0 ? (
         <EmptyState
           icon="bag"
+          image={scenes['empty-bag']}
           title="Your bag is empty"
           body="Find your next phone or a gadget to go with it. Anything you add appears here."
         >
