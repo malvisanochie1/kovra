@@ -65,6 +65,8 @@ export function ScrollShell({ title, heading, right, children }: ScrollShellProp
       <View className="flex-1 bg-ink" onLayout={revealApp}>
         <Animated.ScrollView
           onScroll={onScroll}
+          // Content that grows or shrinks (search, filters) can bring sections into view without a scroll.
+          onContentSizeChange={() => bus.publish(bus.current())}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: bottomInset }}

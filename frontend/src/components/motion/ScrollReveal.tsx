@@ -6,6 +6,8 @@ type Listener = (scrollY: number) => void;
 export interface ScrollBus {
   /** Latest scroll offset of the page. */
   current: () => number;
+  /** Tells every section to check whether it is now on screen. */
+  publish: (scrollY: number) => void;
   subscribe: (listener: Listener) => () => void;
 }
 
@@ -13,7 +15,7 @@ export interface ScrollBus {
 export const ScrollContext = createContext<ScrollBus | null>(null);
 
 /** Creates the bus a scrolling page uses to tell its sections where it is. */
-export function createScrollBus(): ScrollBus & { publish: (scrollY: number) => void } {
+export function createScrollBus(): ScrollBus {
   let latest = 0;
   const listeners = new Set<Listener>();
   return {
@@ -50,7 +52,7 @@ export function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
   const { height } = useWindowDimensions();
   const ref = useRef<HostInstance>(null);
   const [progress] = useState(() => new Animated.Value(0));
-  const [top, setTop] = useState<number | null>(null);
+  const measured = useRef(false);
   // Without a scrolling page to watch, there's nothing to wait for.
   const [shown, setShown] = useState(bus === null);
 
@@ -59,36 +61,30 @@ export function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
       Animated.timing(progress, { toValue: 1, duration: 560, easing, useNativeDriver: nativeDriver }).start();
       return;
     }
-    if (!bus || top === null) return;
-    const check = (scrollY: number) => {
-      if (scrollY + height > top + 40) setShown(true);
+    if (!bus) return;
+    // Measure afresh each time: filtering or loading content can move a section
+    // without the page scrolling, so a remembered position would go stale.
+    const check = () =>
+      ref.current?.measureInWindow((_x, y, _w, h) => {
+        measured.current = true;
+        if (y < height - 40 && y + h > 0) setShown(true);
+      });
+    check();
+    const unsubscribe = bus.subscribe(check);
+    // Never leave a section hidden because measuring failed.
+    const fallback = setTimeout(() => !measured.current && setShown(true), 1200);
+    return () => {
+      unsubscribe();
+      clearTimeout(fallback);
     };
-    check(bus.current());
-    return bus.subscribe(check);
-  }, [bus, height, progress, shown, top]);
-
-  // Never leave a section hidden because measuring failed.
-  useEffect(() => {
-    const fallback = setTimeout(() => top === null && setShown(true), 1200);
-    return () => clearTimeout(fallback);
-  }, [top]);
+  }, [bus, height, progress, shown]);
 
   const offset = progress.interpolate({ inputRange: [0, 1], outputRange: [26, 0] });
   const scale = progress.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] });
 
   return (
     <Animated.View style={{ opacity: progress, transform: [{ translateY: offset }, { scale }] }}>
-      <View
-        ref={ref}
-        className={className}
-        collapsable={false}
-        onLayout={() =>
-          ref.current?.measureInWindow((_x, y) => {
-            // Window position plus the current scroll offset gives the position within the page.
-            setTop(y + (bus?.current() ?? 0));
-          })
-        }
-      >
+      <View ref={ref} className={className} collapsable={false} onLayout={() => !shown && bus?.publish(bus.current())}>
         {children}
       </View>
     </Animated.View>
